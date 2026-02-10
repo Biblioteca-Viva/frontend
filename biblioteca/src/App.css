@@ -1,0 +1,256 @@
+/* RESET */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #0b2b5a;
+  color: white;
+}
+
+/* TOPO */
+.topbar {
+  background-color: #0a2a57;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo span {
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.icones {
+  font-size: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+/* LINHA VERMELHA */
+.linha-vermelha {
+  height: 4px;
+  background-color: #d62828;
+}
+
+/* HERO */
+.hero {
+  min-height: calc(100vh - 84px);
+  background:
+    linear-gradient(
+      rgba(10, 42, 87, 0.9),
+      rgba(10, 42, 87, 0.9)
+    ),
+    url('/biblioteca-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+  padding: 90px 20px;
+}
+
+/* TÍTULO */
+.hero h1 {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: 3.5px;
+  margin-bottom: 10px;
+}
+
+
+/* SUBTÍTULO */
+.subtitulo {
+  color: #fcbf49;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+/* LOCAL */
+.local {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 25px;
+}
+
+/* DESCRIÇÃO */
+.descricao {
+  max-width: 760px;
+  margin: 0 auto 45px;
+  font-size: 15px;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+.busca-container {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto 45px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  border-bottom: 4px solid #fcbf49;
+  padding: 6px;
+}
+
+.busca-container input {
+  width: 100%;
+  box-sizing: border-box; /* 🔑 ISSO resolve o erro */
+  padding: 16px 140px 16px 18px; /* espaço real pro botão */
+  border: none;
+  font-size: 16px;
+  outline: none;
+  border-radius: 10px;
+}
+
+.btn-buscar {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #d62828;
+  color: #ffffff;
+  border: none;
+  padding: 12px 26px;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-buscar:hover {
+  background-color: #b91d1d;
+}
+
+
+/* AÇÃO */
+.acoes {
+  display: flex;
+  justify-content: center;
+}
+
+/* BOTÃO EXPLORAR */
+.secundario {
+  background-color: transparent;
+  border: 1.5px solid #fcbf49;
+  color: #ffffff;
+  padding: 14px 38px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secundario:hover {
+  background-color: #fcbf49;
+  color: #0a2a57;
+}
+
+/* SEÇÕES */
+.secoes {
+  background-color: #f6f7f9;
+  padding: 80px 40px;
+  text-align: center;
+  color: #0a2a57;
+}
+
+.secoes h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.linha-titulo {
+  display: inline-block;
+  width: 70px;
+  height: 4px;
+  background-color: #fcbf49;
+  border-radius: 4px;
+  margin-bottom: 24px;
+}
+
+.descricao-secoes {
+  font-size: 16px;
+  color: #42526e;
+  margin-bottom: 60px;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* CARD */
+.card {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 30px 26px;
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #fcbf49;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card:hover::after {
+  opacity: 1;
+}
+
+.card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card span {
+  font-size: 14px;
+  color: #6b778c;
+}
+
+/* ÍCONES */
+.icone {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+/* CORES DOS ÍCONES */
+.vermelho { background-color: #e63946; }
+.laranja { background-color: #f77f00; }
+.azul { background-color: #2563eb; }
+.roxo { background-color: #4f46e5; }
+.verde { background-color: #16a34a; }
+.roxo-claro { background-color: #9333ea; }
+.verde-agua { background-color: #0d9488; }
+.rosa { background-color: #db2777; }
+.laranja-forte { background-color: #f97316; }
+.azul-petroleo { background-color: #0284c7; }
+
