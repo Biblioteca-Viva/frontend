@@ -16,7 +16,6 @@
     box-sizing: border-box;
 }
 
-/* ── HERO ── */
 .je-hero {
     text-align: center;
     margin-bottom: 48px;
@@ -35,7 +34,9 @@
 }
 
 .je-hero__title-icon {
-    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     color: #d93025;
 }
 
@@ -47,7 +48,6 @@
     font-weight: 400;
 }
 
-/* ── DESTAQUE ── */
 .je-featured {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -205,10 +205,9 @@
 .je-card__meta-item {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
-/* ── BOTÃO VER TODAS ── */
 .je-footer {
     display: flex;
     justify-content: center;

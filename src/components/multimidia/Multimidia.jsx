@@ -1,51 +1,16 @@
 import './Multimidia.css';
 
 const infograficos = [
-    {
-        id: 1,
-        title: 'Desmatamento no Nordeste',
-        author: 'Lucas Mendes',
-        turma: '2º A',
-    },
-    {
-        id: 2,
-        title: 'Água e Saneamento no Sertão',
-        author: 'Maria Clara',
-        turma: '1º B',
-    },
-    {
-        id: 3,
-        title: 'Energia Solar em Pernambuco',
-        author: 'João Vitor',
-        turma: '3º C',
-    },
+    { id: 1, title: 'Desmatamento no Nordeste', author: 'Lucas Mendes', turma: '2º A' },
+    { id: 2, title: 'Água e Saneamento no Sertão', author: 'Maria Clara', turma: '1º B' },
+    { id: 3, title: 'Energia Solar em Pernambuco', author: 'João Vitor', turma: '3º C' },
 ];
 
 const artes = [
-    {
-        id: 1,
-        title: 'Cores do Sertão',
-        author: 'Camila Santos',
-        image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
-    },
-    {
-        id: 2,
-        title: 'Jardim Nordestino',
-        author: 'Rafael Costa',
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop',
-    },
-    {
-        id: 3,
-        title: 'Pinceladas do Agreste',
-        author: 'Beatriz Lima',
-        image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop',
-    },
-    {
-        id: 4,
-        title: 'Rosto da Cidade',
-        author: 'Pedro Silva',
-        image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=400&fit=crop',
-    },
+    { id: 1, title: 'Cores do Sertão', author: 'Camila Santos', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop' },
+    { id: 2, title: 'Jardim Nordestino', author: 'Rafael Costa', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop' },
+    { id: 3, title: 'Pinceladas do Agreste', author: 'Beatriz Lima', image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop' },
+    { id: 4, title: 'Rosto da Cidade', author: 'Pedro Silva', image: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=400&fit=crop' },
 ];
 
 const videos = [
@@ -62,17 +27,8 @@ const libras = [
 
 function BarChartIcon() {
     return (
-        <svg
-            className="mv-card__preview-icon"
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
+        <svg className="mv-card__preview-icon" width="80" height="80" viewBox="0 0 24 24"
+             fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <line x1="18" y1="20" x2="18" y2="10" />
             <line x1="12" y1="20" x2="12" y2="4" />
             <line x1="6" y1="20" x2="6" y2="14" />
@@ -85,8 +41,8 @@ function VideoIcon() {
     return (
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
              stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="3" width="15" height="14" rx="2" ry="2" />
-            <polygon points="17 8 22 12 17 16 17 8" />
+            <path d="M23 7l-7 5 7 5V7z"/>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
         </svg>
     );
 }
@@ -111,12 +67,10 @@ export function Multimidia() {
                 {/* HERO */}
                 <div className="mv-hero">
                     <h1 className="mv-hero__title">Multimídia e Criações Visuais</h1>
-                    <p className="mv-hero__subtitle">
-                        Infográficos, artes, vídeos e literatura em Libras
-                    </p>
+                    <p className="mv-hero__subtitle">Infográficos, artes, vídeos e literatura em Libras</p>
                 </div>
 
-                {/* INFOGRÁFICOS EM FOCO */}
+                {/* INFOGRÁFICOS */}
                 <div className="mv-category__header">
                     <span className="mv-category__icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -149,10 +103,12 @@ export function Multimidia() {
                 <div className="mv-category__header">
                     <span className="mv-category__icon">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                             stroke="#d93025" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                            <circle cx="8.5" cy="8.5" r="1.5" />
-                            <polyline points="21 15 16 10 5 21" />
+                             stroke="#d93025" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="13.5" cy="6.5" r="1"/>
+                            <circle cx="17.5" cy="10.5" r="1"/>
+                            <circle cx="8.5" cy="7.5" r="1"/>
+                            <circle cx="6.5" cy="12.5" r="1"/>
+                            <path d="M12 2C6.48 2 2 6.48 2 12c0 2.76 1.12 5.26 2.93 7.07C6.93 21.07 9 22 12 22c1.1 0 2-.9 2-2v-1c0-.55.45-1 1-1h1c3.31 0 6-2.69 6-6 0-5.52-4.48-10-10-10z"/>
                         </svg>
                     </span>
                     <h2 className="mv-category__name">Galeria de Artes</h2>
@@ -161,28 +117,24 @@ export function Multimidia() {
                 <div className="mv-grid mv-grid--4 mv-mb">
                     {artes.map((item) => (
                         <div className="mv-arte-card" key={item.id}>
-                            <img
-                                src={item.image}
-                                alt={item.title}
-                                className="mv-arte-card__image"
-                            />
+                            <img src={item.image} alt={item.title} className="mv-arte-card__image" />
                             <p className="mv-arte-card__title">{item.title}</p>
                             <p className="mv-arte-card__author">{item.author}</p>
                         </div>
                     ))}
                 </div>
 
-                {/* VÍDEOS + LIBRAS (2 colunas) */}
+                {/* VÍDEOS + LIBRAS */}
                 <div className="mv-grid mv-grid--2">
 
-                    {/* CURTAS E VÍDEOS AUTORAIS */}
+                    {/* CURTAS E VÍDEOS */}
                     <div>
                         <div className="mv-category__header">
                             <span className="mv-category__icon">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                                     stroke="#d93025" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="2" y="3" width="15" height="14" rx="2" ry="2" />
-                                    <polygon points="17 8 22 12 17 16 17 8" />
+                                     stroke="#d93025" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M23 7l-7 5 7 5V7z"/>
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                                 </svg>
                             </span>
                             <h2 className="mv-category__name">Curtas e Vídeos Autorais</h2>

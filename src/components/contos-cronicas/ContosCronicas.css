@@ -22,7 +22,6 @@
     gap: 40px;
 }
 
-/* ── CATEGORY HEADER ── */
 .cc-category__header {
     display: flex;
     align-items: center;
@@ -37,8 +36,9 @@
 }
 
 .cc-category__icon {
-    font-size: 1.4rem;
-    line-height: 1;
+    display: flex;
+    align-items: center;
+    color: #d93025;
 }
 
 .cc-category__name {

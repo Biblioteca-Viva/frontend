@@ -35,7 +35,8 @@
 }
 
 .cl-hero__title-icon {
-    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
     color: #d93025;
 }
 
@@ -55,7 +56,6 @@
     margin-bottom: 56px;
 }
 
-/* ── LIVRO DO MÊS ── */
 .cl-book-card {
     background: #1a2f5e;
     border-radius: 16px;
@@ -71,7 +71,8 @@
 }
 
 .cl-book-card__header-icon {
-    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
 }
 
 .cl-book-card__header-title {
@@ -132,7 +133,6 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
-/* ── PRÓXIMO ENCONTRO ── */
 .cl-meeting-card {
     background: #f5f6fa;
     border-radius: 16px;
@@ -149,7 +149,8 @@
 }
 
 .cl-meeting-card__header-icon {
-    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
 }
 
 .cl-meeting-card__header-title {
@@ -174,7 +175,8 @@
 }
 
 .cl-meeting-card__info-icon {
-    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
     color: #d93025;
     margin-top: 2px;
     flex-shrink: 0;
@@ -223,7 +225,6 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
-/* ── RESENHAS HEADER ── */
 .cl-reviews__header {
     display: flex;
     align-items: center;
@@ -232,7 +233,8 @@
 }
 
 .cl-reviews__icon {
-    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
 }
 
 .cl-reviews__title {

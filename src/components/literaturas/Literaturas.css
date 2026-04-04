@@ -59,6 +59,14 @@
 .lit-category__icon {
     font-size: 1.4rem;
     line-height: 1;
+    display: flex;
+    align-items: center;
+    color: #d93025;
+}
+
+.lit-category__icon svg {
+    width: 22px;
+    height: 22px;
 }
 
 .lit-category__name {

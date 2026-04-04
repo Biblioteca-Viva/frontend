@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import './Admin.css';
 import { PesquisarConteudo } from './PesquisarConteudo';
+import { HistoricoPublicacoes } from './HistoricoPublicacoes';
+import { GerenciarUsuarios } from './Usuarios';
 
 const mockData = {
     Redações: [
@@ -26,7 +28,6 @@ function getAddLabel(tab) {
     return map[tab] || tab;
 }
 
-/* ── SVG ICONS ── */
 function IconEdit() {
     return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -165,7 +166,6 @@ export function Admin() {
                     <span>Biblioteca Viva</span>
                 </div>
                 <nav className="adm-topbar__nav">
-                    <a href="/">Painel</a>
                     <a href="/">Página Principal</a>
                     <button className="adm-topbar__user"><IconUser /> Admin</button>
                     <button className="adm-topbar__sair">Sair</button>
@@ -195,62 +195,62 @@ export function Admin() {
 
                 {/* MAIN */}
                 <main className="adm-main">
-                    {activeMenu === 'pesquisar' ? (
+                    {activeMenu === 'usuarios' ? (
+                        <GerenciarUsuarios />
+                    ) : activeMenu === 'historico' ? (
+                        <HistoricoPublicacoes />
+                    ) : activeMenu === 'pesquisar' ? (
                         <PesquisarConteudo />
                     ) : (
                         <>
-                    {/* BANNER */}
-                        <div className="adm-banner">
-                            <h1 className="adm-banner__title">PAINEL ADMINISTRATIVO</h1>
-                            <p className="adm-banner__sub">Gerencie e alimente o conteúdo da Biblioteca Viva</p>
-                        </div>
-
-                    {/* TOOLBAR */}
-                        <div className="adm-toolbar">
-                            <div className="adm-tabs">
-                                {tabs.map((tab) => (
-                                    <button
-                                        key={tab}
-                                        className={`adm-tab ${activeTab === tab ? 'adm-tab--active' : ''}`}
-                                        onClick={() => setActiveTab(tab)}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
-                            <button className="adm-add-btn">
-                                <IconPlus /> Adicionar {getAddLabel(activeTab)}
-                            </button>
-                        </div>
-
-                    {/* TABLE */}
-                        <div className="adm-table-wrap">
-                            <div className="adm-table-header">
-                                <h2 className="adm-table-title">Gerenciar {activeTab}</h2>
-                                <span className="adm-table-count">{items.length} {items.length === 1 ? 'item' : 'itens'}</span>
+                            <div className="adm-banner">
+                                <h1 className="adm-banner__title">PAINEL ADMINISTRATIVO</h1>
+                                <p className="adm-banner__sub">Gerencie e alimente o conteúdo da Biblioteca Viva</p>
                             </div>
 
-                            <div className="adm-list">
-                                {items.map((item) => (
-                                    <div className="adm-list-item" key={item.id}>
-                                        <div className="adm-list-item__info">
-                                            <p className="adm-list-item__title">{item.title}</p>
-                                            <div className="adm-list-item__meta">
-                                                <span>Por: {item.author}</span>
-                                                <span>Gênero: {item.genero}</span>
-                                                <span>Data: {item.data}</span>
+                            <div className="adm-toolbar">
+                                <div className="adm-tabs">
+                                    {tabs.map((tab) => (
+                                        <button
+                                            key={tab}
+                                            className={`adm-tab ${activeTab === tab ? 'adm-tab--active' : ''}`}
+                                            onClick={() => setActiveTab(tab)}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button className="adm-add-btn">
+                                    <IconPlus /> Adicionar {getAddLabel(activeTab)}
+                                </button>
+                            </div>
+
+                            <div className="adm-table-wrap">
+                                <div className="adm-table-header">
+                                    <h2 className="adm-table-title">Gerenciar {activeTab}</h2>
+                                    <span className="adm-table-count">{items.length} {items.length === 1 ? 'item' : 'itens'}</span>
+                                </div>
+                                <div className="adm-list">
+                                    {items.map((item) => (
+                                        <div className="adm-list-item" key={item.id}>
+                                            <div className="adm-list-item__info">
+                                                <p className="adm-list-item__title">{item.title}</p>
+                                                <div className="adm-list-item__meta">
+                                                    <span>Por: {item.author}</span>
+                                                    <span>Gênero: {item.genero}</span>
+                                                    <span>Data: {item.data}</span>
+                                                </div>
+                                            </div>
+                                            <div className="adm-list-item__actions">
+                                                <span className="adm-badge">{item.status}</span>
+                                                <button className="adm-action-btn adm-action-btn--view" title="Ver"><IconEye /></button>
+                                                <button className="adm-action-btn adm-action-btn--edit" title="Editar"><IconPencil /></button>
+                                                <button className="adm-action-btn adm-action-btn--delete" title="Excluir"><IconTrash /></button>
                                             </div>
                                         </div>
-                                        <div className="adm-list-item__actions">
-                                            <span className="adm-badge">{item.status}</span>
-                                            <button className="adm-action-btn adm-action-btn--view" title="Ver"><IconEye /></button>
-                                            <button className="adm-action-btn adm-action-btn--edit" title="Editar"><IconPencil /></button>
-                                            <button className="adm-action-btn adm-action-btn--delete" title="Excluir"><IconTrash /></button>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
                         </>
                     )}
                 </main>

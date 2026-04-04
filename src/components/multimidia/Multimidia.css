@@ -1,7 +1,3 @@
-/* ===========================
-   MULTIMÍDIA E CRIAÇÕES VISUAIS
-=========================== */
-
 .mv-section {
     background-color: #fff;
     padding: 64px 0 80px;
@@ -16,7 +12,6 @@
     box-sizing: border-box;
 }
 
-/* ── HERO ── */
 .mv-hero {
     text-align: center;
     margin-bottom: 48px;
@@ -38,7 +33,6 @@
     font-weight: 400;
 }
 
-/* ── CATEGORY HEADER ── */
 .mv-category__header {
     display: flex;
     align-items: center;
@@ -59,7 +53,6 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
-/* ── GRIDS ── */
 .mv-grid {
     display: grid;
     gap: 24px;
@@ -81,7 +74,6 @@
     margin-bottom: 56px;
 }
 
-/* ── INFOGRÁFICO CARD ── */
 .mv-card {
     background: #1a2f5e;
     border-radius: 16px;
@@ -138,7 +130,6 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
-/* ── ARTE CARD ── */
 .mv-arte-card {
     display: flex;
     flex-direction: column;
@@ -176,7 +167,6 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
-/* ── LIST ITEMS (Vídeos + Libras) ── */
 .mv-list {
     display: flex;
     flex-direction: column;
@@ -207,6 +197,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: background-color 0.2s ease;
 }
 
 .mv-list-item__icon--red {
@@ -217,10 +208,17 @@
     background-color: #1a2f5e;
 }
 
+.mv-list-item:hover .mv-list-item__icon--red,
+.mv-list-item:hover .mv-list-item__icon--navy {
+    background-color: #f5a623 !important;
+}
+
 .mv-list-item__info {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex: 1;
+    min-width: 0;
 }
 
 .mv-list-item__title {
@@ -229,6 +227,14 @@
     color: #1a2f5e;
     margin: 0;
     font-family: 'Poppins', system-ui, sans-serif;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mv-list-item:hover .mv-list-item__title {
+    color: #d93025 !important;
 }
 
 .mv-list-item__sub {
@@ -251,7 +257,6 @@
     width: fit-content;
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
     .mv-container {
         padding: 0 40px;
