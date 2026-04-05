@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
-import { categories } from '../../data/categories';
+import { categories } from '../../data/categories.jsx';
 
 export function Category() {
   const { id } = useParams();
