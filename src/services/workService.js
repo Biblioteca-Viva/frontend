@@ -1,10 +1,20 @@
 import api from './api';
 
-export async function getAllWorks(type = null) {
-    const params = type ? { type } : {};
+export async function getAllWorks(type = null, limit = null) {
+    const params = {};
+    if (type) params.type = type;
+    if (limit) params.limit = limit;
+
     const response = await api.get('/work', { params });
     console.log('formato da resposta:', response.data);
-    return response.data;
+
+    if (Array.isArray(response.data)) {
+        return response.data;
+    }
+    if (response.data?.content && Array.isArray(response.data.content)) {
+        return response.data.content;
+    }
+    return [];
 }
 
 export async function getWorkById(id) {
