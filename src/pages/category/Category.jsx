@@ -186,10 +186,8 @@ export function Category() {
                             <img src={post.url} alt={post.title} className="post-card-image" />
                         )}
                         <span className="post-card-category">
-                    {isSearchMode
-                        ? categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type
-                        : currentCategory.title}
-                  </span>
+  {categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type}
+</span>
                         <h2 className="post-card-title">{post.title}</h2>
                         <p className="post-card-excerpt">{post.description}</p>
                         <div className="post-card-footer">
