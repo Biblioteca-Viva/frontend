@@ -37,6 +37,6 @@ export async function deleteWork(id) {
 }
 
 export async function likeWork(id) {
-    const response = await api.post(`/work/${id}/like`);
+    const response = await api.put(`/work/${id}/like`);
     return response.data;
 }

@@ -2,7 +2,7 @@ import api from './api';
 
 export async function getComments(workId) {
     const response = await api.get(`/work/${workId}/comments`);
-    return response.data;
+    return response.data.content;
 }
 
 export async function createComment(workId, content) {

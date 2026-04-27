@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getAllWorks } from '../../services/workService';
 import { IconEye, IconHeart, IconDownload } from '../icons';
 import './MateriaisDestaque.css';
+import { getYoutubeThumbnail } from '../multimidia/Multimidia';
 
 const typeToRoute = {
   'Essay': 'redacoes', 'Cordel': 'cordeis', 'Tale': 'contos', 'ShortStory': 'cronicas',
@@ -31,7 +32,7 @@ export function MateriaisDestaque() {
   return (
     <section className="md-section">
       <div className="md-container">
-        
+
         <div className="md-header">
           <div className="md-header__left">
             <h1 className="md-header__title">Materiais em Destaque</h1>
@@ -42,13 +43,17 @@ export function MateriaisDestaque() {
         <div className="md-grid">
           {materiais.map((item) => {
             const route = typeToRoute[item.type] || 'redacoes';
+            let image = item.url;
+            if (item.type == 'LibraLiterature' || item.type == 'Multimedia') {
+              image = getYoutubeThumbnail(item.url);
+            }
             return (
               <Link to={`/${route}/${item.id}`} className="md-card" key={item.id} style={{ textDecoration: 'none' }}>
-                <div className="md-card__img-wrap" style={{backgroundColor: '#1a2f5e', minHeight: '140px'}}>
-                  {item.url && <img src={item.url} alt={item.title} className="md-card__img" />}
+                <div className="md-card__img-wrap" style={{ backgroundColor: '#1a2f5e', minHeight: '140px' }}>
+                  {image && <img src={image} alt={item.title} className="md-card__img" />}
                   <span className="md-card__badge">{item.type}</span>
                 </div>
-                
+
                 <div className="md-card__body">
                   <h2 className="md-card__title">{item.title}</h2>
                   <p className="md-card__author">por {item.author}</p>
