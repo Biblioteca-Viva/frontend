@@ -3,7 +3,7 @@ import api from './api';
 export async function getAllUsers(status = null) {
     const params = status ? { status } : {};
     const response = await api.get('/admin', { params });
-    return response.data;
+    return response.data.content;
 }
 
 export async function approveUser(id) {

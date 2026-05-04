@@ -7,17 +7,17 @@ import './Literaturas.css';
 function BookCard({ id, title, author, likeCount, url }) {
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(likeCount || 0);
-
+  console.log(url);
   function handleLike(e) {
-    e.preventDefault(); 
+    e.preventDefault();
     setCount((c) => liked ? c - 1 : c + 1);
     setLiked(!liked);
   }
 
   return (
     <Link to={`/cordeis/${id}`} className="lit-card" style={{ textDecoration: 'none' }}>
-      <div className="lit-card__image" style={{backgroundColor: '#1a2f5e', display: 'flex', alignItems:'center', justifyContent:'center', height: '100%'}}>
-        {url ? <img src={url} alt={title} style={{width: '100%', height:'100%', objectFit: 'cover'}}/> : <IconBook size={48} color="rgba(255,255,255,0.2)"/>}
+      <div className="lit-card__image" style={{ backgroundColor: '#1a2f5e', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        {url ? <img src={url} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <IconBook size={48} color="rgba(255,255,255,0.2)" />}
       </div>
 
       <button
