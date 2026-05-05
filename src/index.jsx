@@ -269,12 +269,34 @@ export function IconSettings({ size = 18, color = 'currentColor' }) {
   );
 }
 
-export function IconStar({ size = 15, filled = false, color = 'currentColor' }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? color : 'none'} stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  );
+export function IconStar({ size = 15, filled = false, fillRatio = null, color = 'currentColor' }) {
+    // Compatibilidade: se "fillRatio" não for passado, ele olha para "filled" (1 = cheio, 0 = vazio)
+    const ratio = fillRatio !== null ? fillRatio : (filled ? 1 : 0);
+  
+    // Se for exatamente meia estrela (0.5), criamos uma máscara que exibe só a metade esquerda
+    if (ratio === 0.5) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <defs>
+            <clipPath id="half-star-clip">
+              {/* Corta exatamente no meio (largura de 12 para um viewbox de 24) */}
+              <rect x="0" y="0" width="12" height="24" />
+            </clipPath>
+          </defs>
+          {/* Fundo da estrela vazia (stroke) */}
+          <polygon fill="none" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          {/* Parte preenchida cortada na metade */}
+          <polygon fill={color} clipPath="url(#half-star-clip)" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      );
+    }
+  
+    // Retorna estrela completamente cheia ou completamente vazia
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill={ratio === 1 ? color : 'none'} stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    );
 }
 
 export function IconCheck({ size = 16, color = 'currentColor' }) {

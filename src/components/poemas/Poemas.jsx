@@ -82,17 +82,17 @@ export function Poemas() {
             try {
                 const allWorks = await getAllWorks();
                 const filtered = allWorks
-                    .filter(w => w.type === 'Poem')
+                    .filter(w => w.type === 'Poem' || w.type === 'POEM')
                     .slice(0, 6)
                     .map(w => ({
                         id: w.id,
-                        subtype: w.subtype || 'Poema',
+                        subtype: w.poemType || 'Poema',
                         title: w.title,
-                        excerpt: w.excerpt || w.description || '',
-                        date: formatDate(w.createdAt),
-                        author: w.author || w.studentName || 'Estudante',
-                        views: w.views || 0,
-                        likes: w.likes || 0,
+                        excerpt: w.description || '',
+                        date: formatDate(w.publicationDate),
+                        author: w.authorName || w.author || 'Estudante',
+                        views: w.viewCount || 0,
+                        likes: w.likeCount || 0,
                     }));
                 if (filtered.length > 0) setPoems(filtered);
             } catch (error) {
@@ -120,7 +120,6 @@ export function Poemas() {
             <div className="poemas-grid">
                 {poems.map((poem) => (
                     <Link to={`/obra/${poem.id}`} key={poem.id} className="poema-card">
-                        {/* Topo escuro */}
                         <div className="poema-topo">
                             <div className="poema-topo-header">
                                 <span className="poema-subtipo">{poem.subtype}</span>
@@ -133,20 +132,19 @@ export function Poemas() {
                             <p className="poema-data">{poem.date}</p>
                         </div>
 
-                        {/* Base branca */}
                         <div className="poema-base">
                             <p className="poema-autor">
                                 <strong>Por:</strong> {poem.author}
                             </p>
                             <div className="poema-stats">
-                <span className="poema-stat">
-                  <IconEye size={15} color="#6b778c" />
-                    {poem.views}
-                </span>
                                 <span className="poema-stat">
-                  <IconHeart size={15} color="#e63946" />
+                                  <IconEye size={15} color="#6b778c" />
+                                    {poem.views}
+                                </span>
+                                <span className="poema-stat">
+                                  <IconHeart size={15} color="#e63946" />
                                     {poem.likes}
-                </span>
+                                </span>
                             </div>
                         </div>
                     </Link>

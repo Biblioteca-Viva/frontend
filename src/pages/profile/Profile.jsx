@@ -6,24 +6,32 @@ import { logout } from '../../services/authService';
 import { IconBookmark } from '../../components/icons';
 import './Profile.css';
 
+// --- HELPERS PARA THUMBNAIL DO YOUTUBE ---
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+  return match ? match[1] : null;
+};
+
+const getThumbnailUrl = (url) => {
+  const ytId = getYouTubeId(url);
+  return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : url;
+};
+
 export function Profile() {
     const navigate = useNavigate();
     const [allWorks, setAllWorks] = useState([]);
     const [works, setWorks] = useState([]);
     const [loadingWorks, setLoadingWorks] = useState(true);
     const [activeTab, setActiveTab] = useState('publicacoes');
-    const [savedIds, setSavedIds] = useState(
-        JSON.parse(localStorage.getItem('savedPosts') || '[]')
-    );
 
     const email = localStorage.getItem('userEmail') || '';
     const name = localStorage.getItem('userName') || email.split('@')[0];
 
-    const initials = name
-        .split(' ')
-        .slice(0, 2)
-        .map((w) => w[0]?.toUpperCase())
-        .join('');
+    const savedKey = `savedPosts_${email}`;
+    const [savedIds, setSavedIds] = useState(JSON.parse(localStorage.getItem(savedKey) || '[]'));
+
+    const initials = name.split(' ').slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
 
     const [form, setForm] = useState({ name, email, password: '', confirmPassword: '' });
     const [formMsg, setFormMsg] = useState(null);
@@ -35,13 +43,18 @@ export function Profile() {
         getAllWorks()
             .then((data) => {
                 setAllWorks(data);
-                setWorks(data.filter(
-                    (w) => w.author?.toLowerCase() === email.toLowerCase()
-                ));
+                const myWorks = data.filter((w) => {
+                    const authorName = (w.author || '').toLowerCase();
+                    const loggedName = name.toLowerCase();
+                    const loggedEmailPrefix = email.split('@')[0].toLowerCase();
+                    
+                    return authorName.includes(loggedName) || authorName.includes(loggedEmailPrefix);
+                });
+                setWorks(myWorks);
             })
             .catch(() => { setAllWorks([]); setWorks([]); })
             .finally(() => setLoadingWorks(false));
-    }, [email]);
+    }, [email, name]);
 
     const handleLogout = () => {
         logout();
@@ -70,13 +83,13 @@ export function Profile() {
     const handleUnsave = (e, postId) => {
         e.stopPropagation();
         const updated = savedIds.filter((i) => i !== postId);
-        localStorage.setItem('savedPosts', JSON.stringify(updated));
+        localStorage.setItem(savedKey, JSON.stringify(updated));
         setSavedIds(updated);
     };
 
     const typeLabel = {
         Article: 'Artigo', Cordel: 'Cordel', Essay: 'Redação',
-        ShortStory: 'Conto', Tale: 'Crônica', Art: 'Arte',
+        ShortStory: 'Crônica', Tale: 'Conto', Art: 'Arte',
         Infographic: 'Infográfico', Multimedia: 'Vídeo', LibraLiterature: 'Libras',
     };
 
@@ -86,41 +99,55 @@ export function Profile() {
         Infographic: 'infograficos', Multimedia: 'videos', LibraLiterature: 'libras',
     };
 
-    const WorkCard = ({ w, showUnsave = false }) => (
-        <article
-            className="work-card"
-            onClick={() => navigate(`/${typeRoute[w.type] || w.type?.toLowerCase()}/${w.id}`)}
-        >
-            <div className="work-card__top-row">
-                <div className="work-card__type">{typeLabel[w.type] || w.type}</div>
-                {showUnsave && (
-                    <button
-                        className="work-card__unsave"
-                        title="Remover dos salvos"
-                        onClick={(e) => handleUnsave(e, w.id)}
-                    >
-                        <IconBookmark size={14} color="#0a2a57" />
-                    </button>
+    const WorkCard = ({ w, showUnsave = false }) => {
+        const finalImageUrl = getThumbnailUrl(w.url);
+
+        return (
+            <article
+                className="work-card"
+                onClick={() => navigate(`/${typeRoute[w.type] || w.type?.toLowerCase()}/${w.id}`)}
+            >
+                <div className="work-card__top-row">
+                    <div className="work-card__type">{typeLabel[w.type] || w.type}</div>
+                    {showUnsave && (
+                        <button
+                            className="work-card__unsave"
+                            title="Remover dos salvos"
+                            onClick={(e) => handleUnsave(e, w.id)}
+                        >
+                            <IconBookmark size={14} color="#0a2a57" />
+                        </button>
+                    )}
+                </div>
+
+                {/* Exibindo a Imagem / Thumbnail no Perfil */}
+                {finalImageUrl && (
+                    <img 
+                        src={finalImageUrl} 
+                        alt={w.title} 
+                        style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', backgroundColor: '#f0f2f5' }} 
+                    />
                 )}
-            </div>
-            <h3 className="work-card__title">{w.title}</h3>
-            <p className="work-card__desc">{w.description}</p>
-            <div className="work-card__meta">
-                <span className="work-card__stat">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    {w.viewCount ?? 0}
-                </span>
-                <span className="work-card__stat">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    {w.likeCount ?? 0}
-                </span>
-                <span className="work-card__stat">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    {w.commentCount ?? 0}
-                </span>
-            </div>
-        </article>
-    );
+
+                <h3 className="work-card__title">{w.title}</h3>
+                <p className="work-card__desc">{w.description}</p>
+                <div className="work-card__meta">
+                    <span className="work-card__stat">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        {w.viewCount ?? 0}
+                    </span>
+                    <span className="work-card__stat">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        {w.likeCount ?? 0}
+                    </span>
+                    <span className="work-card__stat">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        {w.commentCount ?? 0}
+                    </span>
+                </div>
+            </article>
+        );
+    };
 
     return (
         <>
@@ -148,24 +175,15 @@ export function Profile() {
                 </div>
 
                 <div className="profile-tabs">
-                    <button
-                        className={`profile-tab ${activeTab === 'publicacoes' ? 'profile-tab--active' : ''}`}
-                        onClick={() => setActiveTab('publicacoes')}
-                    >
+                    <button className={`profile-tab ${activeTab === 'publicacoes' ? 'profile-tab--active' : ''}`} onClick={() => setActiveTab('publicacoes')}>
                         Minhas Publicações
                         {works.length > 0 && <span className="profile-tab__count">{works.length}</span>}
                     </button>
-                    <button
-                        className={`profile-tab ${activeTab === 'salvos' ? 'profile-tab--active' : ''}`}
-                        onClick={() => setActiveTab('salvos')}
-                    >
+                    <button className={`profile-tab ${activeTab === 'salvos' ? 'profile-tab--active' : ''}`} onClick={() => setActiveTab('salvos')}>
                         Salvos
                         {savedIds.length > 0 && <span className="profile-tab__count">{savedIds.length}</span>}
                     </button>
-                    <button
-                        className={`profile-tab ${activeTab === 'editar' ? 'profile-tab--active' : ''}`}
-                        onClick={() => setActiveTab('editar')}
-                    >
+                    <button className={`profile-tab ${activeTab === 'editar' ? 'profile-tab--active' : ''}`} onClick={() => setActiveTab('editar')}>
                         Editar Perfil
                     </button>
                 </div>
@@ -225,46 +243,22 @@ export function Profile() {
                             <form className="profile-form" onSubmit={handleSave}>
                                 <div className="profile-form__group">
                                     <label htmlFor="pf-name">Nome</label>
-                                    <input
-                                        id="pf-name"
-                                        type="text"
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        placeholder="Seu nome"
-                                    />
+                                    <input id="pf-name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Seu nome" />
                                 </div>
                                 <div className="profile-form__group">
                                     <label htmlFor="pf-email">Email</label>
-                                    <input
-                                        id="pf-email"
-                                        type="email"
-                                        value={form.email}
-                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                        placeholder="seu@email.com"
-                                    />
+                                    <input id="pf-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="seu@email.com" />
                                 </div>
                                 <div className="profile-form__divider">
                                     <span>Alterar senha</span>
                                 </div>
                                 <div className="profile-form__group">
                                     <label htmlFor="pf-pass">Nova senha</label>
-                                    <input
-                                        id="pf-pass"
-                                        type="password"
-                                        value={form.password}
-                                        onChange={(e) => setForm({ ...form, password: e.target.value })}
-                                        placeholder="Deixe em branco para não alterar"
-                                    />
+                                    <input id="pf-pass" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Deixe em branco para não alterar" />
                                 </div>
                                 <div className="profile-form__group">
                                     <label htmlFor="pf-confirm">Confirmar senha</label>
-                                    <input
-                                        id="pf-confirm"
-                                        type="password"
-                                        value={form.confirmPassword}
-                                        onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-                                        placeholder="Repita a nova senha"
-                                    />
+                                    <input id="pf-confirm" type="password" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} placeholder="Repita a nova senha" />
                                 </div>
                                 {formMsg && (
                                     <p className={`profile-form__msg profile-form__msg--${formMsg.type}`}>

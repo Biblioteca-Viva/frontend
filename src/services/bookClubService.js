@@ -38,3 +38,17 @@ export async function unsubscribeFromBookClub(id) {
     const response = await api.post(`/bookclub/${id}/unsubscribe`);
     return response.data;
 }
+
+//reviews
+
+export async function getBookClubReviews(bookClubId, page = 0, size = 50) {
+    const response = await api.get(`/bookclub/${bookClubId}/reviews`, {
+        params: { page, size }
+    });
+    return response.data;
+}
+
+export async function createBookClubReview(bookClubId, data) {
+    const response = await api.post(`/bookclub/${bookClubId}/reviews`, data);
+    return response.data;
+}

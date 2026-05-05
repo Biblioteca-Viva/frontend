@@ -1,21 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { categories as initialCategories } from '../../data/categories';
-import { getAllWorks } from '../../services/workService';
+import { getHomeData } from '../../services/workService';
 import './Sections.css';
-
-const typeToCategoryId = {
-  'Essay':           'redacoes',
-  'Cordel':          'cordeis',
-  'Tale':            'contos',
-  'ShortStory':      'cronicas',
-  'Poem':            'poemas',
-  'Article':         'jornal',
-  'Infographic':     'infograficos',
-  'Art':             'artes',
-  'Multimedia':      'videos',
-  'LibraLiterature': 'libras'
-};
 
 export function Sections() {
   const [categories, setCategories] = useState(initialCategories);
@@ -23,18 +10,21 @@ export function Sections() {
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const allWorks = await getAllWorks();
+        const data = await getHomeData();
 
-        const counts = {};
-
-        initialCategories.forEach(cat => counts[cat.id] = 0);
-
-        allWorks.forEach(work => {
-          const categoryId = typeToCategoryId[work.type];
-          if (categoryId) {
-            counts[categoryId] = (counts[categoryId] || 0) + 1;
-          }
-        });
+        const counts = {
+            'redacoes': data.essayCount || 0,
+            'cordeis': data.cordelCount || 0,
+            'contos': data.taleCount || 0,
+            'cronicas': data.shortStoryCount || 0,
+            'poemas': data.poemCount || 0,
+            'jornal': data.articleCount || 0,
+            'infograficos': data.infographicCount || 0,
+            'artes': data.artCount || 0,
+            'videos': data.multimediaCount || 0,
+            'libras': data.libraLiteratureCount || 0,
+            'clube-leitura': 0 
+        };
 
         const updatedCategories = initialCategories.map(cat => ({
           ...cat,
@@ -59,11 +49,7 @@ export function Sections() {
         </p>
         <div className="grid">
           {categories.map((category) => (
-              <Link
-                  to={`/categoria/${category.id}`}
-                  key={category.id}
-                  className="card"
-              >
+              <Link to={`/categoria/${category.id}`} key={category.id} className="card">
                 <div className={`icon ${category.color}`}>
                   {category.icon}
                 </div>

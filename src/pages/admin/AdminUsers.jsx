@@ -33,13 +33,18 @@ export function AdminUsers() {
   }, [fetchUsers]);
 
   const filtered = users.filter(u => {
-    const statusMatch = filter === 'approved' ? u.accountStatus === 'active' : u.accountStatus;
-    const matchFilter = filter === 'all' || statusMatch === filter;
+    // Corrige para ler do campo exato que o Backend envia
+    const currentStatus = u.status || u.accountStatus || 'pending';
     
+    let statusMatch = true;
+    if (filter === 'pending') statusMatch = currentStatus === 'pending';
+    if (filter === 'approved') statusMatch = currentStatus === 'active';
+    if (filter === 'rejected') statusMatch = (currentStatus === 'rejected' || currentStatus === 'blocked');
+
     const matchSearch = u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase());
-      
-    return matchFilter && matchSearch;
+                        u.email?.toLowerCase().includes(search.toLowerCase());
+                        
+    return statusMatch && matchSearch;
   });
 
   const handleUpdateStatus = async (id, action) => {
@@ -64,7 +69,7 @@ export function AdminUsers() {
     }
   };
 
-  const pendingCount = users.filter(u => u.accountStatus === 'pending').length;
+  const pendingCount = users.filter(u => (u.status || u.accountStatus) === 'pending').length;
 
   return (
     <AdminLayout>
@@ -121,21 +126,23 @@ export function AdminUsers() {
             ) : filtered.length === 0 ? (
               <tr><td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>Nenhum usuário encontrado.</td></tr>
             ) : (
-              filtered.map(user => (
+              filtered.map(user => {
+                const status = user.status || user.accountStatus || 'pending';
+                return (
                 <tr key={user.id}>
                   <td style={{ fontWeight: 600 }}>{user.name}</td>
                   <td style={{ color: '#6b778c', fontSize: 13 }}>{user.email}</td>
                   <td><span className="badge badge-student">{user.role}</span></td>
                   <td>
-                    <span className={`badge ${statusBadges[user.accountStatus]}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                      {user.accountStatus === 'active' && <IconCheck size={12}/>}
-                      {user.accountStatus === 'rejected' && <IconClose size={12}/>}
-                      {statusLabels[user.accountStatus] || user.accountStatus}
+                    <span className={`badge ${statusBadges[status]}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      {status === 'active' && <IconCheck size={12}/>}
+                      {status === 'rejected' && <IconClose size={12}/>}
+                      {statusLabels[status] || status}
                     </span>
                   </td>
                   <td>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {user.accountStatus === 'pending' && (
+                      {status === 'pending' && (
                         <>
                           <button className="action-btn btn-approve" onClick={() => handleUpdateStatus(user.id, 'approve')} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                             <IconCheck size={14}/> Aprovar
@@ -145,16 +152,16 @@ export function AdminUsers() {
                           </button>
                         </>
                       )}
-                      {user.accountStatus === 'active' && (
+                      {status === 'active' && (
                         <button className="action-btn btn-reject" onClick={() => handleUpdateStatus(user.id, 'block')}>Bloquear</button>
                       )}
-                      {user.accountStatus === 'blocked' && (
+                      {status === 'blocked' && (
                         <button className="action-btn btn-approve" onClick={() => handleUpdateStatus(user.id, 'approve')}>Desbloquear</button>
                       )}
                     </div>
                   </td>
                 </tr>
-              ))
+              )})
             )}
           </tbody>
         </table>
