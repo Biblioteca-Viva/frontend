@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   IconBook, IconUser, IconMenu, IconClose,
@@ -24,10 +24,26 @@ const sections = [
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isLoggedIn = !!localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
+
+  // Usa useMemo em vez de useEffect + useState para evitar re-renders desnecessários
+  const isAdmin = useMemo(() => {
+    if (!token) return false;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const role = payload.role || payload.roles || '';
+      return role.includes('ADMIN') || role === 'ROLE_ADMIN';
+    } catch (e) {
+      console.error("Erro ao verificar permissões:", e);
+      return false;
+    }
+  }, [token]);
 
   const activeSection = location.pathname.startsWith('/categoria/')
       ? location.pathname.split('/')[2]
@@ -55,11 +71,32 @@ export function Header() {
       <>
         <header>
           <nav className="topbar">
-            <div className="logo" onClick={handleLogoClick}>
+            <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
               <span className="logo__icon"><IconBook size={22} color="#f0a500" /></span>
               <span>BIBLIOTECA VIVA</span>
             </div>
-            <div className="icons">
+            
+            <div className="icons" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {isAdmin && (
+                  <button
+                      onClick={() => navigate('/admin')}
+                      style={{
+                          background: '#d62828',
+                          color: '#fff',
+                          border: 'none',
+                          padding: '6px 14px',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          fontFamily: 'Poppins, system-ui, sans-serif',
+                          marginRight: '8px'
+                      }}
+                  >
+                      Admin
+                  </button>
+              )}
+
               <button
                   className={`icon-btn ${isLoggedIn ? 'icon-btn--logged' : ''}`}
                   title={isLoggedIn ? 'Meu perfil' : 'Entrar'}
@@ -68,6 +105,7 @@ export function Header() {
                 <IconUser size={20} />
                 {isLoggedIn && <span className="icon-btn__dot" />}
               </button>
+              
               <button
                   className={`icon-btn ${menuOpen ? 'icon-btn--active' : ''}`}
                   title="Menu"

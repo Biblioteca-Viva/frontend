@@ -4,6 +4,7 @@ import { Header } from '../../components/header/Header';
 import { Footer } from '../../components/footer/Footer';
 import { categories } from '../../data/categories';
 import { getAllWorks } from '../../services/workService';
+import { getAllBookClubs } from '../../services/bookclubService';
 import { IconPencil, IconCalendar, IconHeart, IconMessage, IconDoc, IconSearch, IconBookmark } from '../../components/icons';
 import './Category.css';
 
@@ -12,7 +13,7 @@ const typeMap = {
   'cordeis':     'Cordel',
   'contos':      'Tale',
   'cronicas':    'ShortStory',
-  'poemas':      'Poemas',
+  'poemas':      'Poem',
   'infograficos':'Infographic',
   'artes':       'Art',
   'videos':      'Multimedia',
@@ -25,12 +26,24 @@ const typeLabels = {
   'Cordel':          'cordel cordéis cordeis literatura',
   'Tale':            'conto contos tale',
   'ShortStory':      'crônica crônicas cronica cronicas',
-  'Poemas':            'poema poemas poesia poesias verso versos',
+  'Poem':            'poema poemas poesia poesias verso versos',
   'Infographic':     'infográfico infografico infográficos infograficos',
   'Art':             'arte artes visual',
   'Multimedia':      'multimídia multimidia video vídeo videos vídeos',
   'LibraLiterature': 'libras literatura',
   'Article':         'artigo artigos jornal notícia noticia',
+};
+
+// --- HELPERS PARA THUMBNAIL DO YOUTUBE ---
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+  return match ? match[1] : null;
+};
+
+const getThumbnailUrl = (url) => {
+  const ytId = getYouTubeId(url);
+  return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : url;
 };
 
 export function Category() {
@@ -46,16 +59,32 @@ export function Category() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState(queryFromHero);
 
-  const savedIds = JSON.parse(localStorage.getItem('savedPosts') || '[]');
+  const userEmail = localStorage.getItem('userEmail') || 'guest';
+  const savedIds = JSON.parse(localStorage.getItem(`savedPosts_${userEmail}`) || '[]');
 
   useEffect(() => {
     async function fetchWorks() {
       try {
         setLoading(true);
         setError('');
+        
         if (isSearchMode) {
           const data = await getAllWorks();
           setWorks(data);
+        } else if (id === 'clube-leitura') {
+          const clubData = await getAllBookClubs();
+          const mappedClubs = clubData.map(bc => ({
+              id: bc.id,
+              type: 'BookClub',
+              title: bc.bookName,
+              author: bc.organizerName || bc.bookAuthor,
+              description: bc.bookSynopses,
+              url: bc.bookCoverUrl,
+              publicationDate: bc.date,
+              likeCount: bc.averageRating || 0,
+              commentCount: bc.participantsCount || 0
+          }));
+          setWorks(mappedClubs);
         } else {
           if (!currentCategory) return;
           const backendType = typeMap[id];
@@ -63,7 +92,7 @@ export function Category() {
           setWorks(data);
         }
       } catch (err) {
-        console.error('Erro ao buscar obras:', err);
+        console.error('Erro ao buscar publicações:', err);
         setError('Não foi possível carregar as publicações.');
       } finally {
         setLoading(false);
@@ -78,11 +107,8 @@ export function Category() {
 
   const filtered = works.filter((w) => {
     if (!search) return true;
-    const q = search.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const normalize = (str) =>
-        (str ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
+    const q = search.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const normalize = (str) => (str ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const typeTranslation = typeLabels[w.type] ?? '';
 
     return (
@@ -104,12 +130,8 @@ export function Category() {
         <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f6f7f9' }}>
           <Header />
           <section style={{ flex: 1, padding: '80px 20px', textAlign: 'center', color: '#0a2a57' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'Poppins, system-ui, sans-serif' }}>
-              Categoria não encontrada
-            </h1>
-            <Link to="/" style={{ color: '#d62828', fontWeight: 600, marginTop: 16, display: 'inline-block' }}>
-              ← Voltar à home
-            </Link>
+            <h1 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'Poppins, system-ui, sans-serif' }}>Categoria não encontrada</h1>
+            <Link to="/" style={{ color: '#d62828', fontWeight: 600, marginTop: 16, display: 'inline-block' }}>← Voltar à home</Link>
           </section>
           <Footer />
         </main>
@@ -123,7 +145,6 @@ export function Category() {
   return (
       <main style={{ backgroundColor: '#f6f7f9', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Header />
-
         <section className="category-hero">
           <div className="category-hero__top">
             {heroIcon && (
@@ -146,49 +167,38 @@ export function Category() {
             {isSearchMode ? 'Acervo completo' : 'Seção da Biblioteca'}
           </p>
           <h1>{heroTitle}</h1>
-          <p>
-            {loading
-                ? 'Buscando publicações...'
-                : search
-                    ? `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''} para "${search}"`
-                    : `${works.length} publicaç${works.length !== 1 ? 'ões' : 'ão'}`}
-          </p>
         </section>
 
         <section className="category-content">
           {loading ? (
-              <div className="empty-state">
-                <p>Carregando publicações...</p>
-              </div>
+              <div className="empty-state"><p>Carregando publicações...</p></div>
           ) : error ? (
-              <div className="empty-state">
-                <p style={{ color: '#d62828' }}>{error}</p>
-              </div>
+              <div className="empty-state"><p style={{ color: '#d62828' }}>{error}</p></div>
           ) : filtered.length === 0 ? (
               <div className="empty-state">
                 <span className="empty-state__icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                   <IconDoc size={48} color="#94a3b8" />
                 </span>
                 <p>{search ? 'Nenhum resultado encontrado.' : 'Nenhuma publicação ainda.'}</p>
-                <p style={{ fontSize: 13, marginTop: 8 }}>
-                  {search ? 'Tente outros termos de busca.' : 'Em breve novos conteúdos serão adicionados aqui.'}
-                </p>
               </div>
           ) : (
               <div className="posts-grid">
                 {filtered.map((post) => {
                   const isSaved = savedIds.includes(post.id);
                   const categoryId = isSearchMode
-                      ? Object.keys(typeMap).find((k) => typeMap[k] === post.type) ?? 'redacoes'
+                      ? (post.type === 'BookClub' ? 'clube-leitura' : Object.keys(typeMap).find((k) => typeMap[k] === post.type) ?? 'redacoes')
                       : id;
+                  
+                  // Identifica se é vídeo para puxar a Thumbnail
+                  const finalImageUrl = getThumbnailUrl(post.url);
 
                   return (
                       <Link to={`/${categoryId}/${post.id}`} key={post.id} className="post-card">
-                        {post.url && (
-                            <img src={post.url} alt={post.title} className="post-card-image" />
+                        {finalImageUrl && (
+                            <img src={finalImageUrl} alt={post.title} className="post-card-image" />
                         )}
                         <span className="post-card-category">
-                          {categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type}
+                          {post.type === 'BookClub' ? 'Clube de Leitura' : (categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type)}
                         </span>
                         <h2 className="post-card-title">{post.title}</h2>
                         <p className="post-card-excerpt">{post.description}</p>
@@ -220,7 +230,6 @@ export function Category() {
               </div>
           )}
         </section>
-
         <Footer />
       </main>
   );

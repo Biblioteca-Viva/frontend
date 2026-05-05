@@ -1,19 +1,13 @@
 import api from './api';
 
-export async function getAllWorks(type = null, limit = null) {
-    const params = {};
+export async function getAllWorks(type = null, size = 1000) {
+    const params = { size };
     if (type) params.type = type;
-    if (limit) params.limit = limit;
 
     const response = await api.get('/work', { params });
-    console.log('formato da resposta:', response.data);
-
-    if (Array.isArray(response.data)) {
-        return response.data;
-    }
-    if (response.data?.content && Array.isArray(response.data.content)) {
-        return response.data.content;
-    }
+    
+    if (Array.isArray(response.data)) return response.data;
+    if (response.data?.content && Array.isArray(response.data.content)) return response.data.content;
     return [];
 }
 
@@ -39,4 +33,14 @@ export async function deleteWork(id) {
 export async function likeWork(id) {
     const response = await api.put(`/work/${id}/like`);
     return response.data;
+}
+
+export async function getHomeData() {
+    const response = await api.get('/work/home');
+    return response.data;
+}
+
+export async function getLikedWorks() {
+    const response = await api.get('/work/liked');
+    return response.data; 
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AdminLayout } from './AdminLayout';
-import { getAllWorks } from '../../services/workService';
-import { getComments, updateComment, deleteComment } from '../../services/commentService';
+import { getAllAdminComments } from '../../services/adminService';
+import { updateComment, deleteComment } from '../../services/commentService';
 import { useToast } from '../../context/ToastContext';
 import { IconPencil, IconTrash, IconSearch, IconCheck, IconClose } from '../../components/icons';
 import './AdminLayout.css';
@@ -17,23 +17,13 @@ export function AdminComments() {
   const fetchAllComments = useCallback(async () => {
     try {
       setLoading(true);
-      const works = await getAllWorks();
+      // Substitui as N requisições por APENAS UMA chamada rápida!
+      const data = await getAllAdminComments(0, 100); 
       
-      const commentsPromises = works.map(async (work) => {
-        try {
-          const comments = await getComments(work.id);
-          return comments.map(c => ({ ...c, workId: work.id, workTitle: work.title }));
-        } catch (error) {
-          console.error(`Erro ao buscar comentários da obra ${work.id}:`, error);
-          return []; 
-        }
-      });
-      
-      const results = await Promise.all(commentsPromises);
-      const flattened = results.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setAllComments(flattened);
+      const sorted = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setAllComments(sorted);
     } catch (error) {
-      console.error("Erro na busca geral de obras:", error);
+      console.error("Erro na busca de comentários:", error);
       showToast("Erro ao carregar comentários do servidor.", "error");
     } finally {
       setLoading(false);
@@ -60,7 +50,7 @@ export function AdminComments() {
       await updateComment(comment.workId, comment.id, editText);
       showToast("Comentário atualizado!", "success");
       setEditingId(null);
-      fetchAllComments(); // Recarrega a lista
+      fetchAllComments(); 
     } catch (error) {
       console.error("Erro ao atualizar comentário:", error);
       showToast("Erro ao atualizar comentário.", "error");
@@ -133,7 +123,7 @@ export function AdminComments() {
                     <span style={{ color: '#42526e', fontSize: 14 }}>{comment.content}</span>
                   )}
                 </td>
-                <td style={{ fontSize: 13, color: '#6b778c', maxWidth: 180 }}>{comment.workTitle}</td>
+                <td style={{ fontSize: 13, color: '#6b778c', maxWidth: 180 }}>{comment.workTitle || 'Não especificado'}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button className="action-btn btn-edit" onClick={() => startEdit(comment)} style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
