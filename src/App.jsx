@@ -10,6 +10,7 @@ import { AdminPosts } from './pages/admin/AdminPosts';
 import { AdminComments } from './pages/admin/AdminComments';
 import { AdminUsers } from './pages/admin/AdminUsers';
 import { Profile } from './pages/profile/Profile';
+import { Autor } from './pages/autor/Autor';
 
 function App() {
   return (
@@ -23,8 +24,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Register />} />
 
-            {/* Perfil do usuário */}
+            {/* Perfil do próprio usuário logado */}
             <Route path="/perfil" element={<Profile />} />
+
+            {/* Perfil público de um autor — recebe o nome do autor na URL */}
+            <Route path="/autor/:autor" element={<Autor />} />
 
             {/* Rotas Administrativas */}
             <Route path="/admin" element={<AdminDashboard />} />

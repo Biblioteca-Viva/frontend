@@ -8,27 +8,29 @@ import { IconPencil, IconCalendar, IconHeart, IconMessage, IconDoc, IconSearch, 
 import './Category.css';
 
 const typeMap = {
-  'redacoes': 'Essay',
-  'cordeis': 'Cordel',
-  'contos': 'Tale',
-  'cronicas': 'ShortStory',
-  'infograficos': 'Infographic',
-  'artes': 'Art',
-  'videos': 'Multimedia',
-  'libras': 'LibraLiterature',
-  'jornal': 'Article'
+  'redacoes':    'Essay',
+  'cordeis':     'Cordel',
+  'contos':      'Tale',
+  'cronicas':    'ShortStory',
+  'poemas':      'Poemas',
+  'infograficos':'Infographic',
+  'artes':       'Art',
+  'videos':      'Multimedia',
+  'libras':      'LibraLiterature',
+  'jornal':      'Article'
 };
 
 const typeLabels = {
-  'Essay': 'redação redações ensaio ensaios',
-  'Cordel': 'cordel cordéis cordeis literatura',
-  'Tale': 'conto contos tale',
-  'ShortStory': 'crônica crônicas cronica cronicas',
-  'Infographic': 'infográfico infografico infográficos infograficos',
-  'Art': 'arte artes visual',
-  'Multimedia': 'multimídia multimidia video vídeo videos vídeos',
+  'Essay':           'redação redações ensaio ensaios',
+  'Cordel':          'cordel cordéis cordeis literatura',
+  'Tale':            'conto contos tale',
+  'ShortStory':      'crônica crônicas cronica cronicas',
+  'Poemas':            'poema poemas poesia poesias verso versos',
+  'Infographic':     'infográfico infografico infográficos infograficos',
+  'Art':             'arte artes visual',
+  'Multimedia':      'multimídia multimidia video vídeo videos vídeos',
   'LibraLiterature': 'libras literatura',
-  'Article': 'artigo artigos jornal notícia noticia',
+  'Article':         'artigo artigos jornal notícia noticia',
 };
 
 export function Category() {
@@ -77,7 +79,7 @@ export function Category() {
   const filtered = works.filter((w) => {
     if (!search) return true;
     const q = search.toLowerCase()
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // remove acentos da busca
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const normalize = (str) =>
         (str ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -115,7 +117,7 @@ export function Category() {
   }
 
   const heroTitle = isSearchMode ? 'Busca no Acervo' : currentCategory.title;
-  const heroIcon = isSearchMode ? null : currentCategory.icon;
+  const heroIcon  = isSearchMode ? null : currentCategory.icon;
   const heroColor = isSearchMode ? 'cat-blue' : currentCategory.color;
 
   return (
@@ -164,9 +166,9 @@ export function Category() {
               </div>
           ) : filtered.length === 0 ? (
               <div className="empty-state">
-            <span className="empty-state__icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-              <IconDoc size={48} color="#94a3b8" />
-            </span>
+                <span className="empty-state__icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                  <IconDoc size={48} color="#94a3b8" />
+                </span>
                 <p>{search ? 'Nenhum resultado encontrado.' : 'Nenhuma publicação ainda.'}</p>
                 <p style={{ fontSize: 13, marginTop: 8 }}>
                   {search ? 'Tente outros termos de busca.' : 'Em breve novos conteúdos serão adicionados aqui.'}
@@ -186,31 +188,31 @@ export function Category() {
                             <img src={post.url} alt={post.title} className="post-card-image" />
                         )}
                         <span className="post-card-category">
-  {categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type}
-</span>
+                          {categories.find((c) => typeMap[c.id] === post.type)?.title ?? post.type}
+                        </span>
                         <h2 className="post-card-title">{post.title}</h2>
                         <p className="post-card-excerpt">{post.description}</p>
                         <div className="post-card-footer">
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <IconPencil size={14} /> {post.author}
-                    </span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <IconCalendar size={14} /> {formatDate(post.publicationDate)}
-                    </span>
+                            <IconPencil size={14} /> {post.author}
+                          </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <IconCalendar size={14} /> {formatDate(post.publicationDate)}
+                          </span>
                         </div>
                         <div className="post-card-stats">
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <IconHeart size={14} color="#d62828" /> {post.likeCount || 0}
-                    </span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <IconMessage size={14} /> {post.commentCount || 0}
-                    </span>
+                            <IconHeart size={14} color="#d62828" /> {post.likeCount || 0}
+                          </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <IconMessage size={14} /> {post.commentCount || 0}
+                          </span>
                           <span
                               style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                               className={isSaved ? 'post-card-stat--saved' : ''}
                           >
-                      <IconBookmark size={14} color={isSaved ? '#0a2a57' : '#6b778c'} />
-                    </span>
+                            <IconBookmark size={14} color={isSaved ? '#0a2a57' : '#6b778c'} />
+                          </span>
                         </div>
                       </Link>
                   );
