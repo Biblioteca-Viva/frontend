@@ -54,6 +54,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 28px;
     margin-bottom: 56px;
+    align-items: stretch; /* Alinha os dois lados da grid na mesma altura */
 }
 
 .cl-book-card {
@@ -83,22 +84,31 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
+/* ── CORREÇÃO DA IMAGEM E LAYOUT DO CARD ── */
 .cl-book-card__content {
     display: flex;
-    gap: 20px;
+    flex-direction: row; /* Força os elementos ficarem lado a lado */
+    gap: 24px;
     align-items: flex-start;
 }
 
+.cl-book-card__image-wrapper {
+    flex-shrink: 0;
+    width: 120px; /* Trava a largura da capa */
+}
+
 .cl-book-card__image {
-    width: 110px;
-    height: 150px;
+    width: 100% !important; /* Respeita os 120px do wrapper */
+    height: 175px !important; /* Trava a altura padrão de capa */
     object-fit: cover;
     border-radius: 8px;
-    flex-shrink: 0;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .cl-book-card__info {
     flex: 1;
+    min-width: 0; /* Previne estouro de layout em textos longos */
 }
 
 .cl-book-card__title {
@@ -225,6 +235,10 @@
     font-family: 'Poppins', system-ui, sans-serif;
 }
 
+/* ===========================
+   REVIEWS E COMENTÁRIOS
+=========================== */
+
 .cl-reviews__header {
     display: flex;
     align-items: center;
@@ -243,6 +257,162 @@
     color: #1a2f5e;
     margin: 0;
     font-family: 'Poppins', system-ui, sans-serif;
+}
+
+/* ── FORMULÁRIO DE AVALIAÇÃO ── */
+.cl-review-form {
+    background: #fdfdfd;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.cl-review-form__stars-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.cl-review-form__label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a2f5e;
+    font-family: 'Poppins', system-ui, sans-serif;
+    margin-right: 8px;
+}
+
+.cl-stars-interactive-container {
+    display: flex;
+    gap: 4px;
+}
+
+/* Container de cada estrela para mapear a posição do mouse */
+.cl-star-interactive {
+    position: relative;
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    transition: transform 0.1s;
+}
+
+.cl-star-interactive:hover {
+    transform: scale(1.15);
+}
+
+/* Metades invisíveis para capturar o clique exato (0.5 vs 1.0) */
+.cl-star-half {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.cl-star-half--left {
+    left: 0;
+}
+
+.cl-star-half--right {
+    right: 0;
+}
+
+/* Mostrador do número exato (Ex: 4.5) ao lado das estrelas */
+.cl-review-form__rating-value {
+    margin-left: 10px;
+    font-weight: 700;
+    color: #f5a623;
+    font-size: 1.1rem;
+    min-width: 30px;
+    font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.cl-review-form__input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cl-review-form__textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+.cl-review-form__textarea:focus {
+    outline: none;
+    border-color: #1a2f5e;
+}
+
+.cl-review-form__submit {
+    align-self: flex-end;
+    background: #1a2f5e;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-family: 'Poppins', system-ui, sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.cl-review-form__submit:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.cl-review-form__submit:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+/* ── FILTRO DE NOTAS ── */
+.cl-reviews-filter {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap; /* Importante para caber as 10 notas sem estourar a tela */
+}
+
+.cl-filter-btn {
+    background: #f5f6fa;
+    border: 1px solid #e0e0e0;
+    color: #666;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Poppins', system-ui, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.cl-filter-btn:hover {
+    background: #e8e8e8;
+}
+
+.cl-filter-btn.active {
+    background: #1a2f5e;
+    color: #fff;
+    border-color: #1a2f5e;
+}
+
+.cl-reviews__empty {
+    color: #888;
+    font-size: 0.95rem;
+    font-family: 'Poppins', system-ui, sans-serif;
+    margin-top: 10px;
 }
 
 /* ── RESENHAS GRID ── */
@@ -292,50 +462,12 @@
     flex-shrink: 0;
 }
 
-.cl-star {
-    font-size: 1rem;
-    color: #ddd;
-}
-
-.cl-star--filled {
-    color: #f5a623;
-}
-
 .cl-review-card__text {
     font-size: 0.88rem;
     color: #555;
     margin: 0;
     line-height: 1.6;
     font-family: 'Poppins', system-ui, sans-serif;
-}
-
-.cl-review-card__video-area {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.cl-review-card__video-label {
-    font-size: 0.88rem;
-    color: #555;
-    margin: 0;
-    font-family: 'Poppins', system-ui, sans-serif;
-}
-
-.cl-review-card__video-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #d93025;
-    text-decoration: none;
-    font-family: 'Poppins', system-ui, sans-serif;
-    transition: opacity 0.18s;
-}
-
-.cl-review-card__video-link:hover {
-    opacity: 0.7;
 }
 
 /* ── RESPONSIVE ── */
@@ -352,6 +484,16 @@
 @media (max-width: 768px) {
     .cl-main-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .cl-book-card__content {
+        flex-direction: column; 
+        align-items: center;
+        text-align: center;
+    }
+
+    .cl-book-card__participants {
+        justify-content: center;
     }
 
     .cl-reviews-grid {
