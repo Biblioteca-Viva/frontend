@@ -4,21 +4,22 @@ import {
   IconBook, IconUser, IconMenu, IconClose,
   IconAward, IconScrollText, IconDoc, IconFeather,
   IconBookmark, IconNewspaper, IconBarChart, IconPalette,
-  IconVideo, IconGlobe,
+  IconVideo, IconGlobe, IconPencil,
 } from '../icons';
 import './Header.css';
 
 const sections = [
-  { label: 'Redações Nota 10', key: 'redacoes',     icon: <IconAward size={20} /> },
-  { label: 'Cordéis',          key: 'cordeis',      icon: <IconScrollText size={20} /> },
-  { label: 'Contos',           key: 'contos',       icon: <IconDoc size={20} /> },
-  { label: 'Crônicas',         key: 'cronicas',     icon: <IconFeather size={20} /> },
-  { label: 'Clube de Leitura', key: 'clube-leitura',icon: <IconBookmark size={20} /> },
-  { label: 'Jornal da Escola', key: 'jornal',       icon: <IconNewspaper size={20} /> },
-  { label: 'Infográficos',     key: 'infograficos', icon: <IconBarChart size={20} /> },
-  { label: 'Galeria de Artes', key: 'artes',        icon: <IconPalette size={20} /> },
-  { label: 'Vídeos Autorais',  key: 'videos',       icon: <IconVideo size={20} /> },
-  { label: 'Literatura em Libras', key: 'libras',   icon: <IconGlobe size={20} /> },
+  { label: 'Redações Nota 10',     key: 'redacoes',      icon: <IconAward size={20} /> },
+  { label: 'Cordéis',              key: 'cordeis',       icon: <IconScrollText size={20} /> },
+  { label: 'Contos',               key: 'contos',        icon: <IconDoc size={20} /> },
+  { label: 'Crônicas',             key: 'cronicas',      icon: <IconFeather size={20} /> },
+  { label: 'Poemas',               key: 'poemas',        icon: <IconPencil size={20} /> },
+  { label: 'Clube de Leitura',     key: 'clube-leitura', icon: <IconBookmark size={20} /> },
+  { label: 'Jornal da Escola',     key: 'jornal',        icon: <IconNewspaper size={20} /> },
+  { label: 'Infográficos',         key: 'infograficos',  icon: <IconBarChart size={20} /> },
+  { label: 'Galeria de Artes',     key: 'artes',         icon: <IconPalette size={20} /> },
+  { label: 'Vídeos Autorais',      key: 'videos',        icon: <IconVideo size={20} /> },
+  { label: 'Literatura em Libras', key: 'libras',        icon: <IconGlobe size={20} /> },
 ];
 
 export function Header() {
