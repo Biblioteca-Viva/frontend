@@ -61,6 +61,18 @@
   font-family: 'Poppins', system-ui, sans-serif;
 }
 
+.post-author-link {
+  color: #0a2a57;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.post-author-link:hover {
+  color: #d62828;
+  text-decoration: underline;
+}
+
 .post-body {
   font-size: 17px;
   line-height: 1.8;
@@ -237,14 +249,112 @@
 @media (max-width: 640px) {
   .post-content, .comments-section { padding: 28px 20px; }
   .post-title { font-size: 24px; }
-  
+
   /* Esconde os textos dos botões no mobile e aproxima os ícones */
-  .interact-text { 
-    display: none; 
+  .interact-text {
+    display: none;
   }
-  
+
   .post-interactions {
-    justify-content: space-between; 
+    justify-content: space-between;
     gap: 12px;
   }
+}
+/* ========================================================
+   BARRA E PAINEL DE ADMIN NO POST DETAIL
+======================================================== */
+.admin-post-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff8f0;
+  border: 1.5px dashed #f59e0b;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-post-toolbar__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #92400e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.admin-post-toolbar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-edit-panel {
+  background: #f8faff;
+  border: 1.5px solid #dbeafe;
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 8px;
+}
+
+.admin-edit-panel__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0a2a57;
+  margin: 0 0 20px;
+  font-family: 'Poppins', system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.admin-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-edit-field--full {
+  grid-column: 1 / -1;
+}
+
+.admin-edit-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #42526e;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+
+.admin-edit-field input,
+.admin-edit-field textarea {
+  padding: 10px 14px;
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: #0a2a57;
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.admin-edit-field input:focus,
+.admin-edit-field textarea:focus {
+  border-color: #0a2a57;
+}
+
+.admin-edit-panel__footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
