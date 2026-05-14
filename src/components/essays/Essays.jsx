@@ -60,7 +60,6 @@ export function Essays() {
                     <div className="card-stats">
                       <span><IconEye size={15} /> {r.viewCount || 0}</span>
                       <span><IconMessage size={15} /> {r.commentCount || 0}</span>
-                      <span className="card-download"><IconDownload size={16} /></span>
                     </div>
                   </div>
                 </Link>
