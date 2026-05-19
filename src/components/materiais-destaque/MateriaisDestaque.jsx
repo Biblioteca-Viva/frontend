@@ -98,9 +98,6 @@ export function MateriaisDestaque() {
                     <span className="md-card__stat"><IconEye size={16} /> {item.viewCount || 0}</span>
                     <span className="md-card__stat"><IconHeart size={16} /> {item.likeCount || 0}</span>
                   </div>
-                  <button className="md-card__download" aria-label="Download" onClick={(e) => e.preventDefault()}>
-                    <IconDownload size={18} />
-                  </button>
                 </div>
               </Link>
             )

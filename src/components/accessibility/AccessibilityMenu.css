@@ -1,4 +1,3 @@
-/* --- WIDGET FLUTUANTE --- */
 .a11y-container {
   position: fixed;
   bottom: 24px;
@@ -138,24 +137,42 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- ALTO CONTRASTE REFINADO --- */
 body.high-contrast {
   background-color: #000000 !important;
   color: #ffffff !important;
 }
 
-/* Força os fundos a sumirem para o preto dominar de forma limpa */
 body.high-contrast * {
   background-color: transparent !important;
+  background-image: none !important; 
   border-color: #ffffff !important;
+  color: #ffffff !important; 
+}
+body.high-contrast select,
+body.high-contrast option {
+  background-color: #000000 !important;
+  color: #ffffff !important;
 }
 
-/* Recria as bordas dos cards e painéis para eles não sumirem no escuro */
+body.high-contrast h1, 
+body.high-contrast h2, 
+body.high-contrast h3,
+body.high-contrast h4,
+body.high-contrast h5,
+body.high-contrast h6,
+body.high-contrast .logo__title {
+  color: #FFFF00 !important;
+}
+
 body.high-contrast .card,
 body.high-contrast .post-card,
 body.high-contrast .work-card,
 body.high-contrast .a11y-menu,
 body.high-contrast .admin-card,
+body.high-contrast .admin-stat-card,
+body.high-contrast .essay-card, 
+body.high-contrast .poema-card, 
+body.high-contrast .mv-card, 
 body.high-contrast .admin-sidebar,
 body.high-contrast header,
 body.high-contrast footer {
@@ -164,15 +181,6 @@ body.high-contrast footer {
   box-shadow: none !important;
 }
 
-/* Títulos em Amarelo Puro para destaque */
-body.high-contrast h1, 
-body.high-contrast h2, 
-body.high-contrast h3,
-body.high-contrast .logo__title {
-  color: #FFFF00 !important;
-}
-
-/* Textos comuns em Branco */
 body.high-contrast p, 
 body.high-contrast span,
 body.high-contrast label,
@@ -183,7 +191,6 @@ body.high-contrast td {
   color: #FFFFFF !important;
 }
 
-/* Elementos Interativos (Botões e Links) em Ciano */
 body.high-contrast a, 
 body.high-contrast button {
   background-color: #000000 !important;
@@ -191,33 +198,33 @@ body.high-contrast button {
   border: 2px solid #FFFF00 !important;
 }
 
-/* Efeito Hover nos botões de Alto Contraste */
+body.high-contrast a *, 
+body.high-contrast button * {
+  color: #FFFF00 !important;
+}
+
 body.high-contrast a:hover, 
 body.high-contrast button:hover {
-  background-color: #0c0e0e !important;
+  background-color: #FFFF00 !important;
   color: #000000 !important;
 }
 
-/* Oculta imagens puramente decorativas ou ajusta as necessárias */
+body.high-contrast a:hover *, 
+body.high-contrast button:hover * {
+  color: #000000 !important;
+}
+
 body.high-contrast img, 
 body.high-contrast svg {
   filter: contrast(120%) grayscale(100%);
 }
 
-/* =======================================================
-   REGRAS ESPECÍFICAS DE ALTO CONTRASTE (HERO E HEADER) 
-======================================================= */
-
-/* Transforma a barra de navegação e o menu lateral em preto absoluto */
 body.high-contrast .topbar,
 body.high-contrast .menu-drawer {
   background-color: #000000 !important;
-  border-bottom: 1px solid #333 !important; /* Ajuda a separar do resto do corpo */
+  border-bottom: 1px solid #333 !important;
 }
 
-/* Substitui o gradiente azul do Hero por um gradiente PRETO, 
-  mantendo a imagem da biblioteca no fundo!
-*/
 body.high-contrast .hero {
   background: 
     linear-gradient(
@@ -229,7 +236,38 @@ body.high-contrast .hero {
   background-position: center !important;
 }
 
-/* Garante que os ícones do menu não fiquem apagados no alto contraste */
 body.high-contrast .icon-btn__dot {
   border-color: #000000 !important;
+}
+
+body.high-contrast .admin-stat-card:hover,
+body.high-contrast .card:hover,
+body.high-contrast .essay-card:hover,
+body.high-contrast .poema-card:hover,
+body.high-contrast .mv-card:hover,
+body.high-contrast .mv-arte-card:hover,
+body.high-contrast .mv-list-item:hover {
+  background-color: #000000 !important;
+  border-color: #FFFF00 !important; 
+}
+
+body.high-contrast .admin-stat-card:hover *,
+body.high-contrast .card:hover *,
+body.high-contrast .essay-card:hover *,
+body.high-contrast .poema-card:hover *,
+body.high-contrast .mv-card:hover *,
+body.high-contrast .mv-arte-card:hover *,
+body.high-contrast .mv-list-item:hover * {
+  color: #FFFF00 !important;
+  background-color: transparent !important;
+}
+
+body.high-contrast .mv-list-item:hover .mv-list-item__title {
+  color: #FFFF00 !important;
+}
+
+body.high-contrast .mv-list-item__icon--red,
+body.high-contrast .mv-list-item__icon--navy {
+  background-color: transparent !important;
+  border: 1px solid #ffffff !important;
 }
