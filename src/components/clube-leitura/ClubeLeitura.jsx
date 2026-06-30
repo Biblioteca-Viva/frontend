@@ -11,12 +11,44 @@ import { isLoggedIn } from '../../services/authService';
 import { IconBookmark, IconCalendar, IconMapPin, IconCheck, IconUser, IconStar, IconMessage } from '../icons';
 import './ClubeLeitura.css';
 
+function getUserKey() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return (payload.sub || payload.email || payload.username || '').toLowerCase();
+    } catch { return null; }
+}
+
+function getSubscriptionKey(clubId) {
+    const userKey = getUserKey();
+    if (!userKey || !clubId) return null;
+    return `bc_subscribed_${clubId}_${userKey}`;
+}
+
+function loadSubscriptionState(clubId) {
+    const key = getSubscriptionKey(clubId);
+    if (!key) return false;
+    return localStorage.getItem(key) === 'true';
+}
+
+function saveSubscriptionState(clubId, value) {
+    const key = getSubscriptionKey(clubId);
+    if (!key) return;
+    if (value) {
+        localStorage.setItem(key, 'true');
+    } else {
+        localStorage.removeItem(key);
+    }
+}
+
 export function ClubeLeitura() {
     const [nextMeeting, setNextMeeting] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [confirmado, setConfirmado] = useState(false);
     const [loading, setLoading] = useState(true);
     const [mensagem, setMensagem] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
     const navigate = useNavigate();
 
     const [filterRating, setFilterRating] = useState(0);
@@ -34,6 +66,12 @@ export function ClubeLeitura() {
                 if (data && data.id) {
                     const reviewsData = await getBookClubReviews(data.id);
                     setReviews(reviewsData.content || []);
+
+                    // Restaura estado de inscrição do localStorage vinculado ao usuário
+                    if (isLoggedIn()) {
+                        const savedState = loadSubscriptionState(data.id);
+                        setConfirmado(savedState);
+                    }
                 }
             } catch (error) {
                 console.error("Erro ao buscar próximo clube do livro:", error);
@@ -51,21 +89,48 @@ export function ClubeLeitura() {
             return;
         }
 
-        if (!nextMeeting) return;
+        if (!nextMeeting || isProcessing) return;
+
+        setIsProcessing(true);
+        setMensagem('');
 
         try {
             if (confirmado) {
                 await unsubscribeFromBookClub(nextMeeting.id);
                 setConfirmado(false);
-                setNextMeeting(prev => ({ ...prev, participantsCount: prev.participantsCount - 1 }));
+                saveSubscriptionState(nextMeeting.id, false);
+                setNextMeeting(prev => ({
+                    ...prev,
+                    participantsCount: Math.max(0, (prev.participantsCount || 1) - 1)
+                }));
             } else {
-                await subscribeToBookClub(nextMeeting.id);
-                setConfirmado(true);
-                setNextMeeting(prev => ({ ...prev, participantsCount: prev.participantsCount + 1 }));
+                try {
+                    await subscribeToBookClub(nextMeeting.id);
+                    setConfirmado(true);
+                    saveSubscriptionState(nextMeeting.id, true);
+                    setNextMeeting(prev => ({
+                        ...prev,
+                        participantsCount: (prev.participantsCount || 0) + 1
+                    }));
+                } catch (subError) {
+                    if (subError?.response?.status === 409) {
+                        setConfirmado(true);
+                        saveSubscriptionState(nextMeeting.id, true);
+                    } else {
+                        throw subError;
+                    }
+                }
             }
         } catch (error) {
             console.error("Erro ao confirmar presença:", error);
-            setMensagem('Erro ao processar sua inscrição. Tente novamente.');
+            if (error?.response?.status === 404 || error?.response?.status === 400) {
+                setConfirmado(false);
+                saveSubscriptionState(nextMeeting.id, false);
+            } else {
+                setMensagem('Erro ao processar sua inscrição. Tente novamente.');
+            }
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -161,7 +226,6 @@ export function ClubeLeitura() {
                                 </div>
                             </Link>
 
-                            {/* ── Card direito permanece div normal ── */}
                             <div className="cl-meeting-card">
                                 <div className="cl-meeting-card__header">
                                     <span className="cl-meeting-card__header-icon"><IconCalendar size={22} color="#1a2f5e" /></span>
@@ -198,18 +262,21 @@ export function ClubeLeitura() {
                                 )}
 
                                 <button
-                                    className="cl-meeting-card__btn"
+                                    className={`cl-meeting-card__btn ${confirmado ? 'cl-meeting-card__btn--confirmed' : ''}`}
                                     onClick={handleSubscribeToggle}
-                                    style={{ backgroundColor: confirmado ? '#16a34a' : '#d93025' }}
+                                    disabled={isProcessing}
                                 >
-                                    {confirmado ? (
-                                        <><IconCheck size={16} /> Presença Confirmada!</>
-                                    ) : 'Confirmar Presença'}
+                                    {isProcessing
+                                        ? 'Aguarde...'
+                                        : confirmado
+                                            ? <><IconCheck size={16} /> Presença Confirmada!</>
+                                            : 'Confirmar Presença'
+                                    }
                                 </button>
                             </div>
                         </div>
 
-/                        <div className="cl-reviews-section" style={{ marginTop: '48px' }}>
+                        <div className="cl-reviews-section" style={{ marginTop: '48px' }}>
                             <div className="cl-reviews__header">
                                 <span className="cl-reviews__icon"><IconMessage size={24} color="#1a2f5e" /></span>
                                 <h3 className="cl-reviews__title">Comentários e Avaliações</h3>
@@ -228,14 +295,12 @@ export function ClubeLeitura() {
                                             return (
                                                 <div key={star} className="cl-star-interactive">
                                                     <IconStar size={26} fillRatio={ratio} color={color} />
-
                                                     <div
                                                         className="cl-star-half cl-star-half--left"
                                                         onMouseEnter={() => setHoverRating(star - 0.5)}
                                                         onMouseLeave={() => setHoverRating(0)}
                                                         onClick={() => setNewReviewRating(star - 0.5)}
                                                     />
-
                                                     <div
                                                         className="cl-star-half cl-star-half--right"
                                                         onMouseEnter={() => setHoverRating(star)}
@@ -248,18 +313,18 @@ export function ClubeLeitura() {
                                     </div>
 
                                     <span className="cl-review-form__rating-value">
-                                  {(hoverRating || newReviewRating) > 0 ? (hoverRating || newReviewRating).toFixed(1) : ''}
-                              </span>
+                                        {(hoverRating || newReviewRating) > 0 ? (hoverRating || newReviewRating).toFixed(1) : ''}
+                                    </span>
                                 </div>
 
                                 <div className="cl-review-form__input-group">
-                              <textarea
-                                  className="cl-review-form__textarea"
-                                  placeholder="Escreva sua resenha ou comentário sobre o livro..."
-                                  value={newReviewContent}
-                                  onChange={(e) => setNewReviewContent(e.target.value)}
-                                  maxLength={200}
-                              ></textarea>
+                                    <textarea
+                                        className="cl-review-form__textarea"
+                                        placeholder="Escreva sua resenha ou comentário sobre o livro..."
+                                        value={newReviewContent}
+                                        onChange={(e) => setNewReviewContent(e.target.value)}
+                                        maxLength={200}
+                                    />
                                     <button
                                         type="submit"
                                         className="cl-review-form__submit"
@@ -311,7 +376,7 @@ export function ClubeLeitura() {
                                                                     fillRatio={ratio}
                                                                     color={rating >= star - 0.5 ? '#f5a623' : '#eee'}
                                                                 />
-                                                            )
+                                                            );
                                                         })}
                                                     </div>
                                                 </div>

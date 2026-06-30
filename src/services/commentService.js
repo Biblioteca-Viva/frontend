@@ -36,10 +36,6 @@ export async function unlikeComment(workId, commentId) {
     await api.delete(`/work/${workId}/comments/${commentId}/like`);
 }
 
-// ==========================================
-// Lógica de Respostas (Replies)
-// ==========================================
-
 const REPLIES_KEY = (workId) => `post_replies_${workId}`;
 
 function loadLocalReplies(workId) {
@@ -50,7 +46,7 @@ function loadLocalReplies(workId) {
         } else {
             return {};
         }
-    } catch (error) { 
+    } catch {
         return {}; 
     }
 }
@@ -62,7 +58,6 @@ function saveLocalReplies(workId, data) {
 export async function getReplies(workId, commentId) {
     try {
         const response = await api.get(`/work/${workId}/comments/${commentId}/reply`);
-        // Se a resposta vier dentro de .content ou direto no .data
         return response.data?.content || response.data || null;
     } catch (error) {
         // Se der 404, significa apenas que não há resposta vinculada. Retornamos nulo.
@@ -80,13 +75,12 @@ export async function createReply(workId, commentId, content, authorName, isAdmi
     }
 
     try {
-        // Corrigido para /reply no singular conforme o OpenAPI
         const response = await api.post(`/work/${workId}/comments/${commentId}/reply`, { content });
         let responseData = response.data;
         responseData.isAdmin = isAdmin;
         
         return responseData;
-    } catch (error) {
+    } catch  {
         const all = loadLocalReplies(workId);
         let list = [];
         

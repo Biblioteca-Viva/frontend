@@ -87,12 +87,12 @@
 
 .cl-book-card__image-wrapper {
     flex-shrink: 0;
-    width: 120px; 
+    width: 120px;
 }
 
 .cl-book-card__image {
-    width: 100% !important; 
-    height: 175px !important; 
+    width: 100% !important;
+    height: 175px !important;
     object-fit: cover;
     border-radius: 8px;
     display: block;
@@ -211,13 +211,31 @@
     font-weight: 700;
     cursor: pointer;
     font-family: 'Poppins', system-ui, sans-serif;
-    transition: background 0.18s, transform 0.15s;
+    transition: background 0.18s, transform 0.15s, opacity 0.15s;
     margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.cl-meeting-card__btn:hover {
+.cl-meeting-card__btn:hover:not(:disabled) {
     background: #b52219;
     transform: translateY(-1px);
+}
+
+.cl-meeting-card__btn--confirmed {
+    background: #16a34a;
+}
+
+.cl-meeting-card__btn--confirmed:hover:not(:disabled) {
+    background: #15803d;
+}
+
+.cl-meeting-card__btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .cl-meeting-card__hint {
@@ -332,6 +350,7 @@
     font-family: 'Poppins', system-ui, sans-serif;
     font-size: 0.9rem;
     resize: vertical;
+    box-sizing: border-box;
 }
 
 .cl-review-form__textarea:focus {
@@ -361,7 +380,7 @@
     opacity: 0.85;
 }
 
-/*filtros das reviews*/
+/* filtros das reviews */
 .cl-reviews-filter {
     display: flex;
     gap: 8px;
@@ -469,9 +488,9 @@
     .cl-main-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .cl-book-card__content {
-        flex-direction: column; 
+        flex-direction: column;
         align-items: center;
         text-align: center;
     }
@@ -510,4 +529,9 @@
 .cl-book-card--clickable:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
+}
+
+.reply-badge--red {
+    background-color: #d62828;
+    color: #fff;
 }
