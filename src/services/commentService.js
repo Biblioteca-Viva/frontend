@@ -60,11 +60,10 @@ export async function getReplies(workId, commentId) {
         const response = await api.get(`/work/${workId}/comments/${commentId}/reply`);
         return response.data?.content || response.data || null;
     } catch (error) {
-        // Se der 404, significa apenas que não há resposta vinculada. Retornamos nulo.
         if (error.response && error.response.status === 404) {
             return null;
         }
-        return null; // Para outros erros, garantimos que não retorne algo que quebre a tela
+        return null;
     }
 }
 
