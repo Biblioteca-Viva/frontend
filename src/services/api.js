@@ -4,9 +4,13 @@ const api = axios.create({
     baseURL: 'http://localhost:8080',
 });
 
+const PUBLIC_ENDPOINTS = ['/auth/login', '/auth/register/aluno'];
+
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
-    if (token && !config.url.includes('/auth/')) {
+    const isPublic = PUBLIC_ENDPOINTS.some((path) => config.url.includes(path));
+
+    if (token && !isPublic) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

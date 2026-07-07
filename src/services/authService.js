@@ -18,7 +18,7 @@ export async function login(email, password) {
 }
 
 export async function register(name, email, password) {
-    const response = await api.post('/auth/register', { name, email, password });
+    const response = await api.post('/auth/register/aluno', { name, email, password });
     return response.data;
 }
 
