@@ -251,8 +251,7 @@ export function PostDetail() {
     const [isLiking, setIsLiking] = useState(false);
     const [isCommenting, setIsCommenting] = useState(false);
     const [imageError, setImageError] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
-
+    const [isSaved, setIsSaved] = useState(() => getSavedIds().includes(id));
     const [participants, setParticipants] = useState({ organizer: '', students: [] });
     const [activeTab, setActiveTab] = useState('resenhas');
 
@@ -586,10 +585,32 @@ export function PostDetail() {
             setReplyingTo(null);
             showToast('Resposta enviada!', 'success');
         } catch (err) {
+            if (err.response?.status === 409) {
+                // Já existe uma resposta — busca ela do servidor e exibe
+                try {
+                    const existing = await getReplies(id, commentId);
+                    if (existing) {
+                        setReplies(prev => ({
+                            ...prev,
+                            [commentId]: {
+                                ...existing,
+                                isAdmin: isAdmin,
+                                isCurador: isCurador && !isAdmin,
+                            }
+                        }));
+                    }
+                } catch {
+                    // ignora
+                }
+                showToast('Esse comentário já possui uma resposta.', 'error');
+            } else {
+                showToast('Erro ao enviar resposta. Tente novamente.', 'error');
+            }
             console.error('Erro ao enviar resposta:', err);
-            showToast('Erro ao enviar resposta. Tente novamente.', 'error');
         } finally {
             setIsSendingReply(false);
+            setReplyingTo(null);
+            setReplyText('');
         }
     };
 
