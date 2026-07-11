@@ -14,28 +14,23 @@ export function getYoutubeThumbnail(url) {
   return `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`;
 }
 
-// NOVA FUNÇÃO DE FORMATAÇÃO DE TEMPO
 export function formatDuration(durationInfo) {
   if (!durationInfo) return '';
   
-  // Se já vier formatado ou não for o padrão ISO (evita quebrar se algo mudar)
   if (typeof durationInfo === 'string' && durationInfo.includes(':') && !durationInfo.startsWith('PT')) {
     return durationInfo;
   }
 
-  // Se o backend enviar como um objeto (Padrão do Java Duration em JSON)
   if (typeof durationInfo === 'object' && durationInfo.seconds !== undefined) {
     const m = Math.floor(durationInfo.seconds / 60).toString().padStart(2, '0');
     const s = (durationInfo.seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   }
   
-  // Se o backend enviar a string no formato ISO (PT5M, PT6M18S, etc)
   if (typeof durationInfo === 'string' && durationInfo.startsWith('PT')) {
     const minMatch = durationInfo.match(/(\d+)M/);
     const secMatch = durationInfo.match(/(\d+)S/);
     
-    // Pega os números encontrados ou coloca "00"
     const m = minMatch ? minMatch[1].padStart(2, '0') : '00';
     const s = secMatch ? secMatch[1].padStart(2, '0') : '00';
     
@@ -112,7 +107,6 @@ export function Multimidia() {
           </>
         )}
 
-        {/* Galeria de Artes */}
         {artes.length > 0 && (
           <>
             <div className="mv-category__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -170,7 +164,6 @@ export function Multimidia() {
             </div>
           )}
 
-          {/* Literatura em Libras */}
           {libras.length > 0 && (
             <div>
               <div className="mv-category__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
