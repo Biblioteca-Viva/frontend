@@ -31,7 +31,7 @@ export function Noticias() {
       <div className="news-container">
         <div className="news-header">
           <div>
-            <h2 className="news-title">Avisos e Notícias</h2>
+            <h2 className="news-title">Notícias</h2>
             <p className="news-subtitle">Fique por dentro das novidades da biblioteca e da escola</p>
           </div>
           <Link to="/categoria/noticias" className="news-ver-todas">Ver todas as notícias →</Link>
