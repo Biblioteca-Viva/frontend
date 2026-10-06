@@ -19,6 +19,7 @@ import { AdminStaff } from './pages/admin/AdminStaff';
 
 import { CuradorPosts } from './pages/curador/CuradorPosts';
 import { AccessibilityMenu } from './components/accessibility/AccessibilityMenu';
+import { VLibras } from './components/vlibras/VLibras';
 
 function RequireAuth({ children }) {
   return isLoggedIn() ? children : <Navigate to="/login" replace />;
@@ -36,6 +37,7 @@ function App() {
       <ToastProvider>
         <BrowserRouter>
           <AccessibilityMenu />
+          <VLibras />
 
           <Routes>
             {/* Rotas Públicas */}
