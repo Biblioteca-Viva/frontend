@@ -290,13 +290,18 @@ export function CuradorPosts() {
         setSaving(true);
         try {
             if (form.type === 'BookClub') {
+                // A capa é obrigatória ao criar o clube; na edição, sem arquivo novo o backend mantém a atual
+                if (creating && !imageFile) {
+                    showToast('A capa do livro é obrigatória.', 'error');
+                    return;
+                }
                 const payload = {
                     bookName: form.bookName, bookAuthor: form.bookAuthor, bookSynopses: form.bookSynopses,
-                    bookCoverUrl: form.bookCoverUrl, location: form.location,
+                    location: form.location,
                     date: form.date ? new Date(form.date).toISOString() : new Date().toISOString(),
                 };
-                if (creating) { await createBookClub(payload); showToast('Clube criado!', 'success'); }
-                else { await updateBookClub(editing, payload); showToast('Clube atualizado!', 'success'); }
+                if (creating) { await createBookClub(payload, imageFile); showToast('Clube criado!', 'success'); }
+                else { await updateBookClub(editing, payload, imageFile); showToast('Clube atualizado!', 'success'); }
                 setCreating(false); setEditing(null); fetchPosts();
                 return;
             }
@@ -372,6 +377,8 @@ export function CuradorPosts() {
 
     const isBookClub = form.type === 'BookClub';
     const isNews = form.type === 'News';
+    // URL da imagem já salva (usada no preview quando não há arquivo novo selecionado)
+    const currentImageUrl = form.type === 'Other' ? form.imageUrl : isBookClub ? form.bookCoverUrl : form.url;
 
     return (
         <CuradorLayout>
@@ -417,13 +424,6 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Local</label>
                                 <input style={inputStyle} value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="Ex: Biblioteca Central" />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
-                                <label style={labelStyle}>URL da Capa do Livro</label>
-                                <input style={inputStyle} value={form.bookCoverUrl} onChange={e => setForm({ ...form, bookCoverUrl: e.target.value })} placeholder="https://..." />
-                                {form.bookCoverUrl && (
-                                    <img src={form.bookCoverUrl} alt="Capa" style={{ marginTop: 8, height: 120, width: 80, objectFit: 'cover', borderRadius: 6, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} onError={e => e.target.style.display = 'none'} />
-                                )}
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                 <label style={labelStyle}>Sinopse</label>
@@ -481,10 +481,10 @@ export function CuradorPosts() {
                             </div>
                         </>)}
 
-                        {/* Upload Direto: Arrastar e Soltar */}
-                        {['Art', 'Infographic', 'News', 'Other'].includes(form.type) && (
+                        {/* Upload Direto: Arrastar e Soltar (capa do Clube de Leitura é obrigatória) */}
+                        {['Art', 'Infographic', 'News', 'Other', 'BookClub'].includes(form.type) && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
-                                <label style={labelStyle}>Imagem(Opcional)</label>
+                                <label style={labelStyle}>{isBookClub ? 'Capa do Livro (obrigatória)' : 'Imagem(Opcional)'}</label>
 
                                 <input
                                     type="file"
@@ -498,10 +498,10 @@ export function CuradorPosts() {
                                     }}
                                 />
 
-                                {(imageFile || (form.type === 'Other' ? form.imageUrl : form.url)) ? (
+                                {(imageFile || currentImageUrl) ? (
                                     <div className="image-preview-container">
                                         <img
-                                            src={imageFile ? URL.createObjectURL(imageFile) : (form.type === 'Other' ? form.imageUrl : form.url)}
+                                            src={imageFile ? URL.createObjectURL(imageFile) : currentImageUrl}
                                             alt="Preview"
                                             className="image-preview"
                                         />
@@ -513,21 +513,24 @@ export function CuradorPosts() {
                                             >
                                                 <IconPencil size={14} /> Substituir
                                             </button>
-                                            <button
-                                                type="button"
-                                                className="btn-remove-image"
-                                                onClick={() => {
-                                                    setImageFile(null);
-                                                    if (form.type === 'Other') {
-                                                        setForm({ ...form, imageUrl: '' });
-                                                    } else {
-                                                        setForm({ ...form, url: '' });
-                                                    }
-                                                    if (fileInputRef.current) fileInputRef.current.value = '';
-                                                }}
-                                            >
-                                                <IconTrash size={14} /> Remover
-                                            </button>
+                                            {/* No clube já criado a capa só pode ser substituída: o backend não aceita remover */}
+                                            {(!isBookClub || creating) && (
+                                                <button
+                                                    type="button"
+                                                    className="btn-remove-image"
+                                                    onClick={() => {
+                                                        setImageFile(null);
+                                                        if (form.type === 'Other') {
+                                                            setForm({ ...form, imageUrl: '' });
+                                                        } else if (!isBookClub) {
+                                                            setForm({ ...form, url: '' });
+                                                        }
+                                                        if (fileInputRef.current) fileInputRef.current.value = '';
+                                                    }}
+                                                >
+                                                    <IconTrash size={14} /> Remover
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ) : (
