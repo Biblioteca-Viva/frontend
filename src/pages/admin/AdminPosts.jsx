@@ -265,7 +265,7 @@ export function AdminPosts() {
   const { showToast } = useToast();
 
   const urlDebounceRef = useRef(null);
-  const fileInputRef = useRef(null); 
+  const fileInputRef = useRef(null);
 
   const toggleExpand = (id) => setExpandedId(prev => prev === id ? null : id);
 
@@ -344,7 +344,7 @@ export function AdminPosts() {
 
   const handlePageChange = (page) => setCurrentPage(page);
   const handlePerPageChange = (value) => { setPerPage(value); setCurrentPage(1); };
-  
+
   const startEdit = async (post) => {
     setCreating(false); setImageFile(null); setIsDragging(false);
     if(fileInputRef.current) fileInputRef.current.value = '';
@@ -378,13 +378,18 @@ export function AdminPosts() {
     setSaving(true);
     try {
       if (form.type === 'BookClub') {
+        // A capa é obrigatória ao criar o clube; na edição, sem arquivo novo o backend mantém a atual
+        if (creating && !imageFile) {
+          showToast("A capa do livro é obrigatória.", "error");
+          return;
+        }
         const payload = {
           bookName: form.bookName, bookAuthor: form.bookAuthor, bookSynopses: form.bookSynopses,
-          bookCoverUrl: form.bookCoverUrl, location: form.location,
+          location: form.location,
           date: form.date ? new Date(form.date).toISOString() : new Date().toISOString(),
         };
-        if (creating) { await createBookClub(payload); showToast("Clube criado!", "success"); }
-        else { await updateBookClub(editing, payload); showToast("Clube atualizado!", "success"); }
+        if (creating) { await createBookClub(payload, imageFile); showToast("Clube criado!", "success"); }
+        else { await updateBookClub(editing, payload, imageFile); showToast("Clube atualizado!", "success"); }
         setCreating(false); setEditing(null); fetchPosts();
         return;
       }
@@ -403,7 +408,7 @@ export function AdminPosts() {
         studentClass: form.studentClass || 'Não informado', authorName: matchedUser ? matchedUser.name : form.author,
         ...(matchedUser ? { authorEmail: matchedUser.email } : {})
       };
-      
+
       let payload = {};
       switch (form.type) {
         case 'Essay': payload = { ...basePayload, content: form.content, rate: Number(form.rate), theme: form.theme, themeDescription: form.themeDescription, feedback: form.feedback }; break;
@@ -411,7 +416,7 @@ export function AdminPosts() {
         case 'Tale': payload = { ...basePayload, content: form.content, genre: form.genre }; break;
         case 'Poem': payload = { ...basePayload, content: form.content, rhymeScheme: form.rhymeScheme, poemType: form.poemType }; break;
         case 'ShortStory': case 'Article': payload = { ...basePayload, content: form.content }; break;
-        case 'Other': 
+        case 'Other':
           payload = { ...basePayload, content: form.content };
           payload.url = (form.url && form.url.trim() !== '') ? form.url.trim() : null;
           break;
@@ -420,8 +425,8 @@ export function AdminPosts() {
         default: payload = { ...basePayload };
       }
       const endpointType = typeEndpoints[form.type];
-      
-      if (creating) { await createWork(endpointType, payload, imageFile); showToast("Criado!", "success"); } 
+
+      if (creating) { await createWork(endpointType, payload, imageFile); showToast("Criado!", "success"); }
       else { await updateWork(endpointType, editing, payload, imageFile); showToast("Atualizado!", "success"); }
       setCreating(false); setEditing(null); fetchPosts();
     } catch (error) {
@@ -454,6 +459,8 @@ export function AdminPosts() {
 
   const isBookClub = form.type === 'BookClub';
   const isNews = form.type === 'News';
+  // URL da imagem já salva (usada no preview quando não há arquivo novo selecionado)
+  const currentImageUrl = form.type === 'Other' ? form.imageUrl : isBookClub ? form.bookCoverUrl : form.url;
 
   return (
       <AdminLayout>
@@ -501,13 +508,6 @@ export function AdminPosts() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <label style={labelStyle}>Local</label>
                     <input style={inputStyle} value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="Ex: Biblioteca Central" />
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
-                    <label style={labelStyle}>Capa do Livro</label>
-                    <input style={inputStyle} value={form.bookCoverUrl} onChange={e => setForm({ ...form, bookCoverUrl: e.target.value })} placeholder="https://..." />
-                    {form.bookCoverUrl && (
-                        <img src={form.bookCoverUrl} alt="Capa" style={{ marginTop: 8, height: 120, width: 80, objectFit: 'cover', borderRadius: 6, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }} onError={e => e.target.style.display = 'none'} />
-                    )}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                     <label style={labelStyle}>Sinopse</label>
@@ -568,58 +568,61 @@ export function AdminPosts() {
                 {/* URL (Para Multimedia e Libras) */}
                 {['Multimedia', 'LibraLiterature'].includes(form.type) && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
-                        <label style={labelStyle}>URL do Youtube</label>
-                        <input style={inputStyle} value={form.url} onChange={e => handleUrlChange(e.target.value)} placeholder="Cole o link do YouTube..." />
-                        {fetchingDuration && (
-                            <span style={{ fontSize: 12, color: '#6b778c', marginTop: 4 }}>⏳ Buscando duração no YouTube...</span>
-                        )}
+                      <label style={labelStyle}>URL do Youtube</label>
+                      <input style={inputStyle} value={form.url} onChange={e => handleUrlChange(e.target.value)} placeholder="Cole o link do YouTube..." />
+                      {fetchingDuration && (
+                          <span style={{ fontSize: 12, color: '#6b778c', marginTop: 4 }}>⏳ Buscando duração no YouTube...</span>
+                      )}
                     </div>
                 )}
 
-                {/* Upload Direto: Arrastar e Soltar */}
-                {['Art', 'Infographic', 'News', 'Other'].includes(form.type) && (
+                {/* Upload Direto: Arrastar e Soltar (capa do Clube de Leitura é obrigatória) */}
+                {['Art', 'Infographic', 'News', 'Other', 'BookClub'].includes(form.type) && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
-                        <label style={labelStyle}>Imagem(Opcional)</label>
-                        
-                        <input 
-                            type="file" 
-                            ref={fileInputRef}
-                            style={{ display: 'none' }} 
-                            accept="image/*" 
-                            onChange={e => {
-                              if (e.target.files && e.target.files.length > 0) {
-                                setImageFile(e.target.files[0]);
-                              }
-                            }} 
-                        />
+                      <label style={labelStyle}>{isBookClub ? 'Capa do Livro (obrigatória)' : 'Imagem(Opcional)'}</label>
 
-                        {(imageFile || (form.type === 'Other' ? form.imageUrl : form.url)) ? (
-                            <div className="image-preview-container">
-                                <img 
-                                    src={imageFile ? URL.createObjectURL(imageFile) : (form.type === 'Other' ? form.imageUrl : form.url)} 
-                                    alt="Preview" 
-                                    className="image-preview" 
-                                />
-                                <div className="image-preview-actions">
-                                    <button type="button" className="btn-replace" onClick={() => fileInputRef.current?.click()}><IconPencil size={14} /> Substituir</button>
-                                    <button type="button" className="btn-remove-image" onClick={() => { 
-                                      setImageFile(null); 
-                                      if (form.type === 'Other') {
-                                        setForm({ ...form, imageUrl: '' });
-                                      } else {
-                                        setForm({ ...form, url: '' });
-                                      }
-                                      if (fileInputRef.current) fileInputRef.current.value = ''; 
-                                    }}><IconTrash size={14} /> Remover</button>
-                                </div>
+                      <input
+                          type="file"
+                          ref={fileInputRef}
+                          style={{ display: 'none' }}
+                          accept="image/*"
+                          onChange={e => {
+                            if (e.target.files && e.target.files.length > 0) {
+                              setImageFile(e.target.files[0]);
+                            }
+                          }}
+                      />
+
+                      {(imageFile || currentImageUrl) ? (
+                          <div className="image-preview-container">
+                            <img
+                                src={imageFile ? URL.createObjectURL(imageFile) : currentImageUrl}
+                                alt="Preview"
+                                className="image-preview"
+                            />
+                            <div className="image-preview-actions">
+                              <button type="button" className="btn-replace" onClick={() => fileInputRef.current?.click()}><IconPencil size={14} /> Substituir</button>
+                              {/* No clube já criado a capa só pode ser substituída: o backend não aceita remover */}
+                              {(!isBookClub || creating) && (
+                                  <button type="button" className="btn-remove-image" onClick={() => {
+                                    setImageFile(null);
+                                    if (form.type === 'Other') {
+                                      setForm({ ...form, imageUrl: '' });
+                                    } else if (!isBookClub) {
+                                      setForm({ ...form, url: '' });
+                                    }
+                                    if (fileInputRef.current) fileInputRef.current.value = '';
+                                  }}><IconTrash size={14} /> Remover</button>
+                              )}
                             </div>
-                        ) : (
-                            <div className={`drag-drop-zone ${isDragging ? 'active' : ''}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
-                                <svg className="drag-drop-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                <p className="drag-drop-text">Clique ou arraste a imagem para esta área</p>
-                                <p className="drag-drop-subtext">Formatos aceitos: .JPG, .PNG, .WEBP</p>
-                            </div>
-                        )}
+                          </div>
+                      ) : (
+                          <div className={`drag-drop-zone ${isDragging ? 'active' : ''}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
+                            <svg className="drag-drop-icon" width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <p className="drag-drop-text">Clique ou arraste a imagem para esta área</p>
+                            <p className="drag-drop-subtext">Formatos aceitos: .JPG, .PNG, .WEBP</p>
+                          </div>
+                      )}
                     </div>
                 )}
 
@@ -784,7 +787,8 @@ export function AdminPosts() {
               <div style={{ background: '#fff', borderRadius: 16, padding: '32px 36px', maxWidth: 400, width: '90%', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', fontFamily: 'Poppins, system-ui, sans-serif' }}>
                 <h3 style={{ color: '#0a2a57', fontSize: 18, fontWeight: 700, marginBottom: 10 }}>Excluir publicação</h3>
                 <p style={{ color: '#42526e', fontSize: 14, marginBottom: 24 }}>
-                  Tem certeza que deseja excluir <strong style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', display: 'inline-block', maxWidth: '100%' }}>{confirmDeletePost.title}</strong>? Esta ação não pode ser desfeita.                </p>
+                  Tem certeza que deseja excluir <strong style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', display: 'inline-block', maxWidth: '100%' }}>{confirmDeletePost.title}</strong>? Esta ação não pode ser desfeita.
+                </p>
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
                   <button className="action-btn btn-view" onClick={() => setConfirmDeletePost(null)}>Cancelar</button>
                   <button className="action-btn btn-delete" onClick={handleConfirmDeletePost} style={{ background: '#d62828', color: '#fff' }}>
@@ -794,7 +798,8 @@ export function AdminPosts() {
               </div>
             </div>
         )}
-      </AdminLayout>  );
+      </AdminLayout>
+  );
 }
 
 const labelStyle = { fontSize: 13, fontWeight: 600, color: '#42526e' };

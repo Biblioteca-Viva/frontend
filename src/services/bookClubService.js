@@ -15,13 +15,23 @@ export async function getNextBookClub() {
     return response.data;
 }
 
-export async function createBookClub(data) {
-    const response = await api.post('/bookclub', data);
+export async function createBookClub(data, imageFile) {
+    const formData = new FormData();
+    formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    formData.append('image', imageFile);
+
+    const response = await api.post('/bookclub', formData);
     return response.data;
 }
 
-export async function updateBookClub(id, data) {
-    const response = await api.put(`/bookclub/${id}`, data);
+export async function updateBookClub(id, data, imageFile = null) {
+    const formData = new FormData();
+    formData.append('data', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    const response = await api.put(`/bookclub/${id}`, formData);
     return response.data;
 }
 

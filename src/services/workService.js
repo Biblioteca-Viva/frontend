@@ -3,14 +3,17 @@ import api from './api';
 export async function getAllWorks(type = null, size = 1000) {
     if (type === 'News') {
         const response = await api.get('/news', { params: { size } });
-        return response.data.content || response.data || [];
+        const data = response.data;
+        if (Array.isArray(data)) return data;
+        if (data?.content && Array.isArray(data.content)) return data.content;
+        return [];
     }
 
     const params = { size };
     if (type) params.type = type;
 
     const response = await api.get('/work', { params });
-    
+
     if (Array.isArray(response.data)) return response.data;
     if (response.data?.content && Array.isArray(response.data.content)) return response.data.content;
     return [];
