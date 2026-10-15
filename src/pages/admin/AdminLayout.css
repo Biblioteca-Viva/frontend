@@ -879,3 +879,11 @@
 .btn-remove-image:hover {
   background-color: #fee2e2;
 }
+
+.input-helper-text {
+  font-size: 11px;
+  color: #6b778c;
+  margin-top: 2px;
+  display: block;
+  font-weight: 500;
+}
