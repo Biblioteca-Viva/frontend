@@ -210,12 +210,10 @@ export function CuradorPosts() {
 
     useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
-    // Busca a lista de alunos/usuários cadastrados para o autocomplete de autor
     useEffect(() => {
         getAllUsers().then(setUsers).catch(() => {});
     }, []);
 
-    // ─── URL change handler with YouTube auto-duration ─────────────────────────
     const handleUrlChange = (url) => {
         setForm(prev => ({ ...prev, url }));
         if (!['Multimedia', 'LibraLiterature'].includes(form.type)) return;
@@ -290,7 +288,6 @@ export function CuradorPosts() {
         setSaving(true);
         try {
             if (form.type === 'BookClub') {
-                // A capa é obrigatória ao criar o clube; na edição, sem arquivo novo o backend mantém a atual
                 if (creating && !imageFile) {
                     showToast('A capa do livro é obrigatória.', 'error');
                     return;
@@ -322,9 +319,11 @@ export function CuradorPosts() {
             }
 
             const basePayload = {
-                title: form.title, studentClass: form.studentClass || 'Não informado',
-                description: form.description, publicationDate: new Date().toISOString(),
-                ...authorPayload,
+                title: form.title, 
+                studentClass: form.studentClass || 'Não informado',
+                description: form.description, 
+                publicationDate: new Date().toISOString(),
+                ...authorPayload, // Mantido mutuamente exclusivo
             };
 
             let payload = {};
@@ -377,7 +376,6 @@ export function CuradorPosts() {
 
     const isBookClub = form.type === 'BookClub';
     const isNews = form.type === 'News';
-    // URL da imagem já salva (usada no preview quando não há arquivo novo selecionado)
     const currentImageUrl = form.type === 'Other' ? form.imageUrl : isBookClub ? form.bookCoverUrl : form.url;
 
     return (
@@ -412,10 +410,12 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Nome do Livro</label>
                                 <input style={inputStyle} value={form.bookName} onChange={e => setForm({ ...form, bookName: e.target.value })} placeholder="Ex: Dom Casmurro" />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres.</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Autor do Livro</label>
                                 <input style={inputStyle} value={form.bookAuthor} onChange={e => setForm({ ...form, bookAuthor: e.target.value })} placeholder="Ex: Machado de Assis" />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres.</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Data do Encontro</label>
@@ -424,10 +424,12 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Local</label>
                                 <input style={inputStyle} value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="Ex: Biblioteca Central" />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres.</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                 <label style={labelStyle}>Sinopse</label>
                                 <textarea style={{ ...inputStyle, minHeight: 120 }} value={form.bookSynopses} onChange={e => setForm({ ...form, bookSynopses: e.target.value })} placeholder="Breve descrição do livro..." />
+                                <span className="input-helper-text">Entre 10 e 1000 caracteres.</span>
                             </div>
                         </>)}
 
@@ -435,6 +437,7 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                 <label style={labelStyle}>Título da Notícia</label>
                                 <input style={inputStyle} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres.</span>
                             </div>
                         </>)}
 
@@ -442,6 +445,7 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Título</label>
                                 <input style={inputStyle} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres.</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>
@@ -454,14 +458,17 @@ export function CuradorPosts() {
                                     }
                                 </label>
                                 <AuthorAutocomplete value={form.author} users={users} onChange={(name) => setForm({ ...form, author: name })} />
+                                <span className="input-helper-text">Entre 3 e 255 caracteres (apenas se não vinculado).</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Turma</label>
                                 <input style={inputStyle} value={form.studentClass} onChange={e => setForm({ ...form, studentClass: e.target.value })} placeholder="Ex: 2º ano A" />
+                                <span className="input-helper-text">Entre 3 e 50 caracteres.</span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                 <label style={labelStyle}>Descrição</label>
                                 <input style={inputStyle} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+                                <span className="input-helper-text">Mínimo de 15 caracteres.</span>
                             </div>
                         </>)}
 
@@ -470,12 +477,13 @@ export function CuradorPosts() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                 <label style={labelStyle}>Conteúdo</label>
                                 <textarea style={{ ...inputStyle, minHeight: 180 }} value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} />
+                                <span className="input-helper-text">Obrigatório. {isNews ? 'Mínimo de 10 caracteres.' : ''}</span>
                             </div>
                         )}
 
                         {/* Campos específicos para Outras Produções */}
                         {form.type === 'Other' && (<>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                 <label style={labelStyle}>URL do Youtube(Opcional)</label>
                                 <input style={inputStyle} value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} placeholder="https://..." />
                             </div>
@@ -555,7 +563,7 @@ export function CuradorPosts() {
 
                         {!isBookClub && !isNews && (<>
                             {['Multimedia', 'LibraLiterature'].includes(form.type) && (<>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, gridColumn: '1/-1' }}>
                                     <label style={labelStyle}>URL do Vídeo (YouTube)</label>
                                     <input
                                         style={inputStyle}
@@ -563,6 +571,7 @@ export function CuradorPosts() {
                                         onChange={e => handleUrlChange(e.target.value)}
                                         placeholder="https://www.youtube.com/watch?v=..."
                                     />
+                                    <span className="input-helper-text">Obrigatório. Insira o link completo.</span>
                                     {fetchingDuration && (
                                         <span style={{ fontSize: 12, color: '#6b778c' }}>Buscando duração do vídeo...</span>
                                     )}
@@ -570,12 +579,13 @@ export function CuradorPosts() {
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                                     <label style={labelStyle}>Duração (mm:ss)</label>
                                     <input style={inputStyle} value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} placeholder="Ex: 03:30" />
+                                    <span className="input-helper-text">Formato mm:ss.</span>
                                 </div>
                             </>)}
                             {form.type === 'Cordel' && (<div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label style={labelStyle}>Rimas</label><input style={inputStyle} value={form.rhymeScheme} onChange={e => setForm({ ...form, rhymeScheme: e.target.value })} /></div>)}
                             {form.type === 'Tale' && (<div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label style={labelStyle}>Gênero</label><input style={inputStyle} value={form.genre} onChange={e => setForm({ ...form, genre: e.target.value })} /></div>)}
                             {form.type === 'Essay' && (<>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label style={labelStyle}>Nota</label><input type="number" style={inputStyle} value={form.rate} onChange={e => setForm({ ...form, rate: e.target.value })} /></div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label style={labelStyle}>Nota</label><input type="number" style={inputStyle} value={form.rate} onChange={e => setForm({ ...form, rate: e.target.value })} /><span className="input-helper-text">Valor entre 0 e 1000.</span></div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><label style={labelStyle}>Tema</label><input style={inputStyle} value={form.theme} onChange={e => setForm({ ...form, theme: e.target.value })} /></div>
                             </>)}
                         </>)}
